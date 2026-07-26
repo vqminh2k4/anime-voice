@@ -7,29 +7,31 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
 
-        /* CSS CUSTOM PROPERTIES */
+        /* CSS CUSTOM PROPERTIES (Kurumi Gothic) */
         :root {
-            --clr-bg:          #070305;
-            --clr-surface:     #0f0507;
-            --clr-card:        rgba(10, 2, 5, 0.75);
-            --clr-border:      rgba(220, 20, 40, 0.5);
-            --clr-border-glow: rgba(255, 30, 50, 0.8);
+            --clr-bg:          #050000;
+            --clr-surface:     #120203;
+            --clr-card:        rgba(18, 2, 3, 0.75);
+            --clr-border:      #39070B;
+            --clr-border-glow: rgba(184, 10, 30, 0.5);
             
-            --clr-red:         #d31027;
-            --clr-red-bright:  #ff2a3a;
-            --clr-red-dark:    #8b0000;
-            --clr-red-glow:    rgba(255, 42, 58, 0.5);
-            --clr-gold:        #d4a843;
+            --clr-red:         #39070B;
+            --clr-red-bright:  #B80A1E;
+            --clr-red-dark:    #120203;
+            --clr-red-glow:    rgba(255, 61, 94, 0.5);
+            --clr-accent:      #FFD9E1;
+            --clr-highlight:   #FF3D5E;
             
-            --clr-text:        #fff5f5;
-            --clr-text-muted:  rgba(255, 245, 245, 0.7);
-            --clr-text-dim:    rgba(255, 245, 245, 0.4);
+            --clr-text:        #FFD9E1;
+            --clr-text-muted:  rgba(255, 217, 225, 0.6);
+            --clr-text-dim:    rgba(255, 217, 225, 0.3);
             
-            --font-heading:    'Cinzel', serif;
+            --font-heading:    'Cormorant Garamond', serif;
+            --font-heading-alt:'Cinzel', serif;
             --font-body:       'Inter', sans-serif;
             
             --radius-md:       12px;
@@ -47,8 +49,13 @@
             font-family: var(--font-body);
             background-color: var(--clr-bg);
             background-image: url('img/anh_nen.png');
+            /* Tùy chỉnh ảnh nền ở đây: 
+               - cover: Phóng to che kín màn hình (Sẽ bị cắt viền nếu tỷ lệ không khớp)
+               - contain: Thu nhỏ vừa khít (Thấy toàn bộ ảnh nhưng có thể bị viền đen)
+               - 100% 100%: Ép dãn vừa khít 100% màn hình (Không bị cắt nhưng ảnh sẽ bị lùn/béo) 
+            */
             background-size: cover;
-            background-position: center right;
+            background-position: 60% 40%;
             background-attachment: fixed;
             background-repeat: no-repeat;
             color: var(--clr-text);
@@ -194,7 +201,7 @@
             justify-content: flex-end;
             width: 100%;
             flex: 1; /* Stretch to fill main so we can push items to the top */
-            max-width: 750px; /* Keep it compact so characters on sides are visible */
+            max-width: 1050px; /* Keep it compact so characters on sides are visible */
             transform: scale(0.95);
             transform-origin: bottom center;
             margin: 0 auto;
@@ -203,18 +210,17 @@
         }
 
         .hero-text-wrapper {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-top: 2rem;
-            transition: margin-bottom 0.5s ease;
+            text-align: left; /* Changed to left align */
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+            max-width: 600px;
+            align-self: flex-start; /* Align left in flex container */
+            margin-right: auto;
+            position: relative;
+            z-index: 10;
         }
-        
         body.is-playing .hero-text-wrapper {
-            margin-bottom: auto; /* Push text to the top */
-        }
-        
-        body.is-playing .hero-desc {
-            display: none; /* Hide subtitle */
+            /* Keep it visible in the document flow */
         }
 
         .interaction-area {
@@ -226,13 +232,58 @@
         
         /* Glass Panel Styling for Bottom UI */
         .glass-panel {
-            background: rgba(10, 5, 15, 0.6) !important;
+            background: rgba(25, 0, 0, 0.55) !important;
             backdrop-filter: blur(20px) saturate(1.5) !important;
             -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
-            border: 1px solid var(--clr-border) !important;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255, 61, 94, 0.2) !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(184, 10, 30, 0.2) !important;
+            border-radius: 20px !important;
             width: 100%;
         }
+
+        /* MAGIC CIRCLE BORDER THEME (Option 4) */
+        .magic-circle-border {
+            position: relative;
+            width: 95% !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 26px !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+
+        .mc-glass-layer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(70,0,0,0.25), rgba(20,0,0,0.55));
+            backdrop-filter: blur(20px);
+            border-radius: 26px;
+            z-index: 0;
+        }
+
+        .mc-glow-layer {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(255,40,60,0.4), 0 0 40px rgba(255,40,60,0.15);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .zafkiel-axis {
+            position: absolute;
+            left: 50%;
+            top: -20px;
+            bottom: -20px;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,70,90,.25), transparent);
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
 
 
 
@@ -326,39 +377,44 @@
 
         /* TEXT UTILS */
         .hero-eyebrow {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             letter-spacing: 0.35em;
             text-transform: uppercase;
             color: var(--clr-text-muted);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 12px;
+            font-family: var(--font-heading-alt);
         }
         .hero-eyebrow svg { width: 14px; height: 14px; fill: var(--clr-red-bright); }
         
         .hero-title {
             font-family: var(--font-heading);
-            font-size: clamp(3rem, 5vw, 4.2rem);
+            font-size: clamp(3.5rem, 5vw, 4.5rem);
             font-weight: 700;
             line-height: 1.1;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.9);
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.9);
+            color: var(--clr-text);
         }
         .hero-title .highlight {
-            color: var(--clr-red-bright);
-            text-shadow: 0 0 15px rgba(255,42,58,0.5), 0 0 30px rgba(255,42,58,0.3);
+            color: var(--clr-highlight);
+            text-shadow: 0 0 15px rgba(255,61,94,0.4), 0 0 30px rgba(184,10,30,0.3);
         }
         
         .hero-desc {
-            font-size: 1rem;
-            color: var(--clr-text-muted);
-            max-width: 480px;
-            line-height: 1.6;
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-style: italic;
+            color: var(--clr-accent);
+            max-width: 500px;
+            line-height: 1.4;
             margin-bottom: 3rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            opacity: 0.8;
         }
 
         /* CARD BORDER STYLES */
@@ -547,48 +603,63 @@
             box-shadow: 0 0 30px rgba(255,255,255,0.8);
         }
         
-        /* PLAYER BAR STYLES */
+        /* PLAYER BAR ENHANCEMENTS */
         .player-bar {
             width: 100%;
-            border-radius: 16px;
+            border-radius: 24px;
             position: relative;
-            margin-top: 10px;
+            margin-top: 5px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-10px);
         }
         
         .player-bar-inner {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 25px;
+            padding: 20px 30px;
             position: relative;
             z-index: 5;
-            gap: 20px;
+            gap: 30px;
         }
         
         .player-info {
             display: flex;
             align-items: center;
-            gap: 15px;
-            width: 250px;
+            gap: 18px;
+            width: 280px;
         }
         
         .player-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
             background-size: cover;
             background-position: center;
-            border: 2px solid var(--clr-red-bright);
-            box-shadow: 0 0 10px var(--clr-red-glow);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .player-avatar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
         .player-text h3 {
-            font-size: 1rem;
-            margin-bottom: 3px;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
         .player-text p {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--clr-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .player-center {
@@ -601,23 +672,25 @@
         
         .audio-player {
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
         }
         
         .player-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             width: 100%;
         }
         
         .player-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
-            width: 250px;
+            gap: 15px;
+            width: 280px;
             justify-content: flex-end;
         }
+        
+        /* (Removed redundant DOM avatar styles) */
 
         .separator {
             display: flex;
@@ -665,26 +738,46 @@
             position: relative;
             z-index: 100;
             padding: 1.5rem 4rem;
-            background: linear-gradient(0deg, rgba(5,0,5,0.9) 0%, rgba(10,2,5,0.7) 100%);
-            border-top: 1px solid rgba(255,42,58,0.2);
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            background: rgba(5, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(184, 10, 30, 0.2);
         }
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
+            gap: 1.5rem;
             max-width: 1400px;
             margin: 0 auto;
         }
         .feature-item {
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
             align-items: flex-start;
+            padding: 1.2rem;
+            background: rgba(25, 0, 0, 0.4);
+            border: 1px solid rgba(255, 61, 94, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .feature-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 61, 94, 0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(184, 10, 30, 0.4);
+        }
+        .feature-item:hover .feature-icon {
+            color: var(--clr-highlight);
+            filter: drop-shadow(0 0 10px var(--clr-highlight));
+            transform: scale(1.1);
         }
         .feature-icon {
             color: var(--clr-red-bright);
             flex-shrink: 0;
-            filter: drop-shadow(0 0 5px rgba(255,42,58,0.5));
+            filter: drop-shadow(0 0 5px rgba(184, 10, 30, 0.5));
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
         }
         .feature-content h4 {
             font-size: 0.85rem;
@@ -758,22 +851,248 @@
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
         .result-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; }
-        .result-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--clr-red-bright); background: url('avatar/avatar_kurumi.png') center/cover; }
-        .result-info { text-align: left; }
-        .result-info h3 { font-family: var(--font-heading); font-size: 1.1rem; }
-        .result-info p { font-size: 0.8rem; color: var(--clr-text-muted); }
         
-        .audio-player { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
-        .player-controls { display: flex; align-items: center; gap: 12px; }
-        .btn-play-round { width: 36px; height: 36px; border-radius: 50%; background: var(--clr-red-bright); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .progress-audio { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; cursor: pointer; position: relative; }
-        .progress-audio-fill { height: 100%; background: var(--clr-red-bright); width: 0%; pointer-events: none; }
-        .time-display { font-size: 0.75rem; color: var(--clr-text-muted); min-width: 65px; text-align: right; }
+        .player-bar {
+            width: 100%;
+            border-radius: 20px;
+            position: relative;
+            margin-top: 10px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-40px);
+        }
         
-        .result-actions { display: flex; gap: 10px; justify-content: center; }
-        .btn-download { height: 42px; padding: 0 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
-        .btn-download.main { background: var(--clr-red-bright); color: white; }
-        .btn-download.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .player-bar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            position: relative;
+            z-index: 5;
+            gap: 20px;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .player-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 43, 85, 0.6);
+            box-shadow: 0 0 12px rgba(255, 43, 85, 0.2);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0; /* Đảm bảo avatar không bị ép méo */
+        }
+        .player-avatar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .player-text h3 {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            color: var(--clr-text);
+        }
+        
+        .player-center { flex: 1; max-width: 650px; }
+        
+        .audio-player { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+        .player-controls-row { display: flex; align-items: center; justify-content: center; gap: 24px; position: relative; }
+        .clock-ring-bg {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+            animation: spin 75s linear infinite;
+            animation-play-state: paused;
+        }
+        .is-playing .clock-ring-bg {
+            animation-play-state: running;
+        }
+        .player-progress-row { display: flex; align-items: center; gap: 15px; width: 100%; font-size: 0.75rem; color: var(--clr-text-muted); }
+        
+        /* Unified Action Buttons */
+        .btn-player-action {
+            background: rgba(12, 2, 3, 0.6);
+            border: 1px solid rgba(184, 10, 30, 0.4);
+            padding: 0 16px;
+            height: 32px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            color: var(--clr-text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-player-action svg {
+            transition: all 0.3s ease;
+            fill: none;
+            stroke: currentColor;
+            opacity: 0.8;
+        }
+
+        .btn-player-action:hover {
+            background: rgba(12, 2, 3, 0.9);
+            border-color: rgba(255, 43, 85, 0.6);
+            color: var(--clr-text);
+            box-shadow: 0 0 12px rgba(255, 43, 85, 0.3);
+        }
+
+        .btn-player-action:hover svg {
+            stroke: var(--clr-red-bright);
+            fill: var(--clr-red-bright);
+            opacity: 1;
+            filter: drop-shadow(0 0 6px var(--clr-red-bright));
+        }
+
+        /* New Play Button styling */
+        .btn-play-round { 
+            width: 52px; height: 52px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #FF3D5E, #B80A1E);
+            color: white;
+            border: none; 
+            cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: playPulse 2.5s infinite;
+            z-index: 20;
+        }
+        @keyframes playPulse {
+            0% { box-shadow: 0 0 10px #ff3d5e, 0 0 35px rgba(255,61,94,.45), 0 0 80px rgba(255,61,94,.18); }
+            50% { box-shadow: 0 0 15px #ff3d5e, 0 0 45px rgba(255,61,94,.6), 0 0 110px rgba(255,61,94,.25); }
+            100% { box-shadow: 0 0 10px #ff3d5e, 0 0 35px rgba(255,61,94,.45), 0 0 80px rgba(255,61,94,.18); }
+        }
+        .btn-play-round::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 61, 94, 0.3);
+            background: rgba(255, 61, 94, 0.1);
+            z-index: -1;
+            transition: all 0.3s;
+        }
+        .btn-play-round:hover { transform: scale(1.05); }
+        .btn-play-round:hover::after { inset: -12px; background: rgba(255, 61, 94, 0.2); }
+        .btn-play-round svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
+        
+        /* Secondary player controls (prev, next, shuffle, repeat) */
+        .btn-player-icon {
+            background: transparent; border: none; color: var(--clr-text-muted); cursor: pointer;
+            transition: color 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-player-icon:hover { color: var(--clr-highlight); }
+        
+        .btn-player-icon.liked svg {
+            fill: var(--clr-red-bright) !important;
+            stroke: var(--clr-red-bright) !important;
+            animation: heartPulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .rainbow-heart {
+            animation: rainbowCycle 1.5s linear infinite;
+        }
+        @keyframes rainbowCycle {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .progress-audio { 
+            flex: 1; height: 5px; 
+            background: rgba(40,0,0,0.6); 
+            border-radius: 3px; 
+            cursor: pointer; 
+            position: relative; 
+            overflow: visible;
+        }
+        .progress-audio-fill { 
+            height: 100%; 
+            background: linear-gradient(to right, #B80A1E, #FF3D5E); 
+            width: 0%; 
+            border-radius: 3px;
+            pointer-events: none; 
+            box-shadow: 0 0 8px rgba(255, 61, 94, 0.5);
+        }
+        .progress-audio-thumb { 
+            position: absolute; 
+            width: 16px; height: 16px; 
+            background: #fff; 
+            border-radius: 50%; 
+            top: 50%; 
+            transform: translate(-50%, -50%); 
+            left: 0%; 
+            box-shadow: 0 0 10px rgba(255, 61, 94, 0.6), 0 0 4px white; 
+            pointer-events: none; 
+            z-index: 5;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            box-sizing: border-box;
+        }
+        .progress-audio-thumb::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px; height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 0 5px #fff;
+        }
+        .progress-audio:hover .progress-audio-thumb {
+            width: 16px; height: 16px;
+            background: rgba(12, 2, 3, 0.8);
+            border: 2px solid #FF2B55;
+            box-shadow: 0 0 10px rgba(255, 43, 85, 0.6);
+        }
+        .progress-audio:active .progress-audio-thumb {
+            width: 16px; height: 16px;
+            background: rgba(12, 2, 3, 0.8);
+            border: 2px solid #FF2B55;
+            box-shadow: 0 0 15px #FF2B55;
+        }
+        .progress-audio:active .progress-audio-thumb::after {
+            opacity: 1;
+        }
+        
+        .time-display { font-size: 0.75rem; font-weight: 500; color: var(--clr-text-muted); min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+        
+        .result-actions { display: flex; gap: 15px; justify-content: center; }
+        
+        /* Save Button Gradient */
+        .btn-download { height: 38px; padding: 0 1.2rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.3s; border: none; }
+        .btn-download.main { background: linear-gradient(90deg, #D11333, #FF5575); color: white; box-shadow: 0 4px 15px rgba(209, 19, 51, 0.4); }
+        .btn-download.main:hover { box-shadow: 0 6px 20px rgba(255, 85, 117, 0.6); transform: translateY(-2px); }
+        
+        .btn-download.ghost { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--clr-text); padding: 0 1rem; }
+        .btn-download.ghost:hover { background: rgba(255, 61, 94, 0.1); border-color: rgba(255, 61, 94, 0.3); }
 
         #audioPlayer { display: none; }
         
@@ -808,6 +1127,8 @@
 </head>
 
 <body>
+    <!-- VISUALIZER CANVAS (Full Screen Background) -->
+    <canvas id="resultCanvas" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
     <canvas id="particles-canvas"></canvas>
 
     <!-- HEADER -->
@@ -838,18 +1159,18 @@
     <main>
         <!-- PLAYER LAYOUT -->
         <div class="player-container">
-            <!-- FULL-SCREEN VISUALIZER CANVAS (Hidden by default, shown when result is active) -->
-            <canvas id="resultCanvas" width="1200" height="400" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 1200px; height: auto; z-index: 1; pointer-events: none;"></canvas>
-
-            <!-- TEXT SECTION (Top Center) -->
-            <div class="hero-text-wrapper" style="position: relative; z-index: 10;">
-                <div class="hero-eyebrow">
-                    TOKISAKI KURUMI • DATE A LIVE
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-left: 5px;"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>
+            <!-- TEXT SECTION (Top) -->
+            <div class="hero-text-wrapper" id="heroText" style="position: absolute; top: 3%; left: 0px; text-align: left; z-index: 10;">
+                <div class="hero-eyebrow" style="font-size: 1.0rem; color: var(--clr-text-muted); margin-bottom: 8px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: middle;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="6" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/></svg>
+                    TOKISAKI KURUMI
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-left: 5px; vertical-align: middle;"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>
                 </div>
-                <h1 class="hero-title">Turn Any Song Into<br><span class="highlight">A Kurumi Cover</span></h1>
-                <p class="hero-desc">Paste a YouTube link or upload your audio file. Our AI will transform the vocals into Kurumi Tokisaki's enchanting voice.</p>
+                <h1 class="hero-title" style="font-size: 2.5rem; font-family: 'Cinzel', serif; font-weight: 700; margin: 0; line-height: 1.2;">Turn Any Song<br>Into <span class="highlight" style="color: #FF3D5E;">Her Voice</span></h1>
+                <p class="hero-desc" style="font-size: 1rem; font-style: italic; color: var(--clr-text-muted); margin-top: 8px;">The Time Has Begun...</p>
             </div>
+
+
 
             <!-- INTERACTION PANELS (Bottom Center) -->
             <div class="interaction-area">
@@ -969,51 +1290,164 @@
                     </div>
                 </div>
 
-                <!-- RESULT PANEL (Bottom Player) -->
-                <div class="player-bar glass-panel" id="resultPanel" style="display: none;">
-                    <div class="card-border">
-                        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                <!-- RESULT PANEL -->
+                <div class="player-bar magic-circle-border" id="resultPanel" style="display: none; padding: 0; margin-top: 35px;">
+                    <div class="mc-glass-layer"></div>
+                    <div class="mc-glow-layer"></div>
+                    <div class="zafkiel-axis"></div>
+                    <div class="player-svg-layer" style="position: absolute; inset: 0; pointer-events: none; z-index: 2;">
+                        <svg width="0" height="0">
+                            <defs>
+                                <linearGradient id="kurumi-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#8B0000" />
+                                    <stop offset="30%" stop-color="#FF4500" />
+                                    <stop offset="70%" stop-color="#FF0000" />
+                                    <stop offset="100%" stop-color="#FF69B4" />
+                                </linearGradient>
+                                <filter id="svg-glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#FF2B55" flood-opacity="0.8"/>
+                                </filter>                        <!-- Corners -->
+                        <div style="position: absolute; top: 0; left: 0; width: 20px; height: 20px;">
+                            <svg width="20" height="20" viewBox="0 0 20 20">
+                                <path d="M 20 1 A 19 19 0 0 0 1 20" fill="none" stroke="url(#kurumi-grad)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        <div style="position: absolute; top: 0; right: 0; width: 20px; height: 20px;">
+                            <svg width="20" height="20" viewBox="0 0 20 20">
+                                <path d="M 0 1 A 19 19 0 0 1 19 20" fill="none" stroke="url(#kurumi-grad)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        <div style="position: absolute; bottom: 0; left: 0; width: 20px; height: 20px;">
+                            <svg width="20" height="20" viewBox="0 0 20 20">
+                                <path d="M 1 0 A 19 19 0 0 0 20 19" fill="none" stroke="url(#kurumi-grad)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;">
+                            <svg width="20" height="20" viewBox="0 0 20 20">
+                                <path d="M 19 0 A 19 19 0 0 1 0 19" fill="none" stroke="url(#kurumi-grad)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Side Lines -->
+                        <div style="position: absolute; top: 20px; bottom: 20px; left: 0; width: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="1" y1="0" x2="1" y2="100%" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+                        <div style="position: absolute; top: 20px; bottom: 20px; right: 0; width: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="1" y1="0" x2="1" y2="100%" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+
+                        <!-- Top & Bottom Lines -->
+                        <div style="position: absolute; top: 0; left: 20px; right: 50%; margin-right: 50px; height: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="0" y1="1" x2="100%" y2="1" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+                        <div style="position: absolute; top: 0; right: 20px; left: 50%; margin-left: 50px; height: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="0" y1="1" x2="100%" y2="1" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+                        <div style="position: absolute; bottom: 0; left: 20px; right: 50%; margin-right: 50px; height: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="0" y1="1" x2="100%" y2="1" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+                        <div style="position: absolute; bottom: 0; right: 20px; left: 50%; margin-left: 50px; height: 2px;">
+                            <svg width="100%" height="100%" preserveAspectRatio="none"><line x1="0" y1="1" x2="100%" y2="1" stroke="url(#kurumi-grad)" stroke-width="1.5" /></svg>
+                        </div>
+                        
+                        
+                        <!-- Center Top Ornament (XII) -->
+                        <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; z-index: 5;">
+                            <svg viewBox="0 0 100 20">
+                                <line x1="0" y1="15" x2="25" y2="15" stroke="#FF4500" stroke-width="1.5" />
+                                <polygon points="30,12 33,15 30,18 27,15" fill="#FF2B55" stroke="none" filter="url(#svg-glow)"/>
+                                <polygon points="30,13 31.5,15 30,17 28.5,15" fill="#FFF"/>
+                                <text x="50" y="19" font-family="'Cinzel', serif" font-size="12" font-weight="bold" fill="#FF2B55" text-anchor="middle" filter="url(#svg-glow)">XII</text>
+                                <polygon points="70,12 73,15 70,18 67,15" fill="#FF2B55" stroke="none" filter="url(#svg-glow)"/>
+                                <polygon points="70,13 71.5,15 70,17 68.5,15" fill="#FFF"/>
+                                <line x1="75" y1="15" x2="100" y2="15" stroke="#FF4500" stroke-width="1.5" />
+                            </svg>
+                        </div>
+
+                        <!-- Center Bottom Ornament (VI) -->
+                        <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; z-index: 5;">
+                            <svg viewBox="0 0 100 20">
+                                <line x1="0" y1="5" x2="25" y2="5" stroke="#FF4500" stroke-width="1.5" />
+                                <polygon points="30,2 33,5 30,8 27,5" fill="#FF2B55" stroke="none" filter="url(#svg-glow)"/>
+                                <polygon points="30,3 31.5,5 30,7 28.5,5" fill="#FFF"/>
+                                <text x="50" y="9" font-family="'Cinzel', serif" font-size="12" font-weight="bold" fill="#FF2B55" text-anchor="middle" filter="url(#svg-glow)">VI</text>
+                                <polygon points="70,2 73,5 70,8 67,5" fill="#FF2B55" stroke="none" filter="url(#svg-glow)"/>
+                                <polygon points="70,3 71.5,5 70,7 68.5,5" fill="#FFF"/>
+                                <line x1="75" y1="5" x2="100" y2="5" stroke="#FF4500" stroke-width="1.5" />
+                            </svg>
+                        </div>
                     </div>
-                    
-                    <div class="player-bar-inner">
+                    <div class="player-bar-inner" style="padding: 16px 36px; position: relative; z-index: 10;">
                         <!-- LEFT: Info -->
-                        <div class="player-info">
+                        <div class="player-info" style="min-width: 320px;">
                             <div class="player-avatar" id="resultAvatar"></div>
                             <div class="player-text">
-                                <h3 id="resultTitle">Kurumi Tokisaki</h3>
-                                <p id="resultSourceLabel">AI Vocal Cover</p>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <h3 id="resultTitle" style="margin: 0; font-size: 1rem; font-weight: 700;">Kurumi AI Cover</h3>
+                                    <button class="btn-player-icon" id="btnLikeSmall" onclick="this.classList.toggle('liked')" style="opacity: 1; transition: all 0.2s;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--clr-text-muted)" stroke-width="2" style="transition: all 0.2s;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+                                </div>
+                                <p id="resultSourceLabel" style="text-transform: none; font-size: 0.75rem; margin: 4px 0; color: var(--clr-text-muted); display: flex; align-items: center; gap: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Date A Live
+                                </p>
+                                <span style="display: inline-block; margin-top: 2px; padding: 2px 8px; background: rgba(184, 10, 30, 0.3); border-radius: 10px; font-size: 0.65rem; color: var(--clr-red-bright); font-weight: 700;">AI COVER</span>
                             </div>
                         </div>
 
-                        <!-- CENTER: Visualizer & Controls -->
+                        <!-- CENTER: Controls -->
                         <div class="player-center">
-                            <!-- Visualizer absolute covering the whole screen, canvas moved to background -->
-                            <!-- BUT WAIT! Visualizer canvas needs to be large! -->
-                            
                             <div class="audio-player">
-                                <div class="player-controls">
+                                <div class="player-controls-row">
+                                    <div class="clock-ring-bg">
+                                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                                            <circle cx="50" cy="50" r="45" stroke="rgba(255,61,94,0.15)" stroke-width="1" stroke-dasharray="2 6" fill="none"/>
+                                            <path d="M 50 2 L 50 8 M 98 50 L 92 50 M 50 98 L 50 92 M 2 50 L 8 50" stroke="rgba(255,61,94,0.2)" stroke-width="2"/>
+                                            <circle cx="50" cy="50" r="30" stroke="rgba(255,61,94,0.1)" stroke-width="0.5" fill="none"/>
+                                        </svg>
+                                    </div>
+                                    <button class="btn-player-icon" title="Shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg></button>
+                                    <button class="btn-player-icon" title="Previous"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+                                    
                                     <button class="btn-play-round" id="btnPlayPause">
-                                        <svg id="iconPlay" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                        <svg id="iconPause" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                                        <svg id="iconPlay" viewBox="0 0 24 24" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>
+                                        <svg id="iconPause" viewBox="0 0 24 24" width="24" height="24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                                     </button>
+                                    
+                                    <button class="btn-player-icon" title="Next"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+                                    <button class="btn-player-icon" title="Repeat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></button>
+                                </div>
+                                <div class="player-progress-row">
+                                    <span class="time-display" id="timeCurrent">0:00</span>
                                     <div class="progress-audio" id="audioProgress">
                                         <div class="progress-audio-fill" id="audioProgressFill"></div>
+                                        <div class="progress-audio-thumb" id="audioProgressThumb"></div>
                                     </div>
-                                    <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+                                    <span class="time-display" id="timeTotal">0:00</span>
                                 </div>
                             </div>
                             <audio id="audioPlayer"></audio>
                         </div>
 
                         <!-- RIGHT: Actions -->
-                        <div class="player-actions">
-                            <a href="#" class="btn-download main" id="btnDownload" download="cover.mp3">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                <span>Download</span>
+                        <div class="player-actions" style="min-width: 320px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 12px; flex-shrink: 0; padding-right: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-right: 25px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--clr-text-muted);"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <div id="volumeProgress" style="width: 80px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position: relative; cursor: pointer;"><div id="volumeFill" style="width: 100%; height: 100%; background: var(--clr-red-bright); border-radius: 2px; pointer-events: none;"></div><div id="volumeThumb" style="position: absolute; width: 8px; height: 8px; background: var(--clr-red-bright); border-radius: 50%; top: 50%; transform: translateY(-50%); left: 100%; box-shadow: 0 0 5px var(--clr-red-bright); pointer-events: none;"></div></div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; width: 100%; justify-content: flex-end;">
+                            <button class="btn-player-action" id="btnFavorite">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                Favorite
+                            </button>
+                            <a href="#" class="btn-player-action" id="btnDownload" download="cover.mp3">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Download
                             </a>
-                            <button class="btn-download ghost" id="btnNewCover">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-                                <span>New</span>
+                            <button class="btn-player-action" id="btnBackToInput">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                Make Another
+                            </button>
+                            <button class="btn-player-icon" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; padding: 6px; display: flex; align-items: center; justify-content: center; margin-left: 2px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                             </button>
                         </div>
                     </div>

@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI Elements
     const els = {
         inputCard: document.getElementById('inputCard'),
+        featuresBar: document.querySelector('.features-bar'),
         urlInput: document.getElementById('urlInput'),
         btnGenerate: document.getElementById('btnGenerate'),
         dropZone: document.getElementById('dropZone'),
@@ -25,10 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
         iconPause: document.getElementById('iconPause'),
         audioProgress: document.getElementById('audioProgress'),
         audioProgressFill: document.getElementById('audioProgressFill'),
-        timeDisplay: document.getElementById('timeDisplay'),
+        audioProgressThumb: document.getElementById('audioProgressThumb'),
+        timeCurrent: document.getElementById('timeCurrent'),
+        timeTotal: document.getElementById('timeTotal'),
         waveformDisplay: document.getElementById('waveformDisplay'),
         btnDownload: document.getElementById('btnDownload'),
         btnNewCover: document.getElementById('btnNewCover'),
+        volumeProgress: document.getElementById('volumeProgress'),
+        volumeFill: document.getElementById('volumeFill'),
+        volumeThumb: document.getElementById('volumeThumb'),
         
         toastContainer: document.getElementById('toastContainer'),
         
@@ -125,24 +131,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Voice Playback
+    // DEBUG SHORTCUT: Shift + T to jump to result screen
+    document.addEventListener('keydown', (e) => {
+        if (e.shiftKey && e.key === 'T') {
+            console.log("DEV MODE: Jumping to Result Panel");
+            fetch('audio/miku_voice.mp3')
+                .then(res => res.blob())
+                .then(blob => {
+                    showResult(blob, "Dev Test Mode (Bypass API)");
+                })
+                .catch(err => console.error("Test audio error:", err));
+        }
+    });
+
+    // Preload voice files for instant playback
+    const preloadedVoices = {
+        'kurumi': new Audio('audio/ara_ara.mp3'),
+        'elaina': new Audio('audio/elaina_watashi_wa.mp3'),
+        'miku': new Audio('audio/miku_voice.mp3')
+    };
+    
     let currentCharacterAudio = null;
-    const kurumiVoices = ['kurumi', 'ara_ara', 'zafkiel'];
     
     function playCharacterVoice(voice) {
         if (currentCharacterAudio) {
-            currentCharacterAudio.pause();
+            try {
+                currentCharacterAudio.pause();
+                currentCharacterAudio.currentTime = 0;
+            } catch (e) {
+                console.log("Audio pause error:", e);
+            }
+        }
+        
+        currentCharacterAudio = preloadedVoices[voice];
+        if (currentCharacterAudio) {
             currentCharacterAudio.currentTime = 0;
+            currentCharacterAudio.play().catch(e => {
+                console.log("Cannot play voice (file missing or autoplay blocked):", e);
+            });
         }
-        
-        let voiceFile = voice;
-        if (voice === 'kurumi') {
-            voiceFile = kurumiVoices[Math.floor(Math.random() * kurumiVoices.length)];
-        }
-        
-        currentCharacterAudio = new Audio(`audio/${voiceFile}.mp3`);
-        currentCharacterAudio.play().catch(e => {
-            console.log("Cannot play voice (file missing or autoplay blocked):", e);
+    }
+
+    const chibiImage = document.getElementById('chibiImage');
+    if (chibiImage) {
+        chibiImage.addEventListener('click', () => {
+            if (state.selectedVoice) {
+                playCharacterVoice(state.selectedVoice);
+            }
         });
     }
 
@@ -187,9 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 // Solo Mode Logic
-                if (state.selectedVoice !== voice) {
-                    playCharacterVoice(voice);
-                }
+                playCharacterVoice(voice);
                 voiceOptions.forEach(o => o.classList.remove('active'));
                 opt.classList.add('active');
                 state.selectedVoice = voice;
@@ -248,14 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 // Elaina Theme (Purple/White)
-                root.style.setProperty('--clr-red', '#7e22ce'); 
-                root.style.setProperty('--clr-red-bright', '#a855f7');
-                root.style.setProperty('--clr-red-dark', '#4c1d95');
-                root.style.setProperty('--clr-border', 'rgba(126, 34, 206, 0.5)');
-                root.style.setProperty('--clr-border-glow', 'rgba(168, 85, 247, 0.8)');
+                root.style.setProperty('--clr-red', '#9b59b6');
+                root.style.setProperty('--clr-red-bright', '#af7ac5');
+                root.style.setProperty('--clr-red-dark', '#76448a');
+                root.style.setProperty('--clr-border', 'rgba(155, 89, 182, 0.5)');
+                root.style.setProperty('--clr-border-glow', 'rgba(175, 122, 197, 0.8)');
                 
-                document.querySelector('.hero-eyebrow').innerHTML = `ELAINA • WANDERING WITCH <svg viewBox="0 0 24 24"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>`;
-                document.querySelector('.hero-title').innerHTML = `Turn Any Song Into<br><span class="highlight">An Elaina Cover</span>`;
+                document.querySelector('.hero-eyebrow').innerHTML = `GUEST SINGER <svg viewBox="0 0 24 24"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>`;
+                document.querySelector('.hero-title').innerHTML = `Elaina <span class="highlight">Tabitabi</span>`;
                 document.querySelector('.hero-desc').textContent = `Paste a YouTube link or upload your audio file. Our AI will transform the vocals into Elaina's enchanting voice.`;
                 const procTitle = document.getElementById('processingMainTitle');
                 if (procTitle) procTitle.textContent = `Elaina is singing...`;
@@ -319,27 +352,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (url.toLowerCase() === 'test') {
-            els.processingPanel.classList.remove('active');
-            els.inputCard.style.display = 'none';
-            els.resultPanel.classList.add('active');
-            
-            // Dùng fetch để tránh lỗi Live Server không stream được file nhạc
-            fetch('test.mp3')
-                .then(res => {
-                    if (!res.ok) throw new Error("Không tìm thấy file test.mp3");
-                    return res.blob();
-                })
+            console.log("DEV MODE: Jumping to Result Panel via test keyword");
+            fetch('audio/miku_voice.mp3')
+                .then(res => res.blob())
                 .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    els.audioPlayer.src = blobUrl;
-                    els.btnDownload.href = blobUrl;
-                    els.btnDownload.download = 'test.mp3';
-                    const srcLabel = document.getElementById('resultSourceLabel');
-                    if (srcLabel) srcLabel.textContent = 'Test Mode (Local Audio)';
+                    showResult(blob, "Dev Test Mode (Bypass API)");
                 })
                 .catch(err => {
-                    console.error(err);
-                    alert("Lỗi load nhạc test: " + err.message + "\nBạn hãy tải lại trang (Ctrl+F5) nhé!");
+                    console.error("Test audio error:", err);
+                    alert("Lỗi load nhạc: " + err.message);
                 });
             return;
         }
@@ -368,27 +389,115 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.dataTransfer.files.length) processFile(e.dataTransfer.files[0]);
     });
 
-    els.btnNewCover.addEventListener('click', () => {
-        els.urlInput.value = '';
-        if (state.isPlaying) togglePlay();
-        URL.revokeObjectURL(els.audioPlayer.src);
-        resetUI();
-    });
+    if (els.btnNewCover) {
+        els.btnNewCover.addEventListener('click', () => {
+            els.urlInput.value = '';
+            if (state.isPlaying) togglePlay();
+            URL.revokeObjectURL(els.audioPlayer.src);
+            resetUI();
+        });
+    }
+
+    const btnBackToInput = document.getElementById('btnBackToInput');
+    if (btnBackToInput) {
+        btnBackToInput.addEventListener('click', (e) => {
+            e.preventDefault(); // Ngăn trình duyệt nhảy trang
+            els.urlInput.value = '';
+            if (state.isPlaying) togglePlay();
+            if (els.audioPlayer.src) URL.revokeObjectURL(els.audioPlayer.src);
+            resetUI();
+        });
+    }
 
     // Audio Player controls
     els.btnPlayPause.addEventListener('click', togglePlay);
     els.audioPlayer.addEventListener('timeupdate', updateProgress);
+    els.audioPlayer.addEventListener('loadedmetadata', () => {
+        if (els.timeTotal) els.timeTotal.textContent = formatTime(els.audioPlayer.duration);
+    });
     els.audioPlayer.addEventListener('ended', () => {
         state.isPlaying = false;
         els.iconPlay.style.display = 'block';
         els.iconPause.style.display = 'none';
+        if (els.resultPanel) els.resultPanel.classList.remove('is-playing');
         animateWaveform(false);
     });
-    els.audioProgress.addEventListener('click', (e) => {
-        const rect = els.audioProgress.getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        els.audioPlayer.currentTime = pos * els.audioPlayer.duration;
+    
+    // Drag slider support
+    let isDragging = false;
+    els.audioProgress.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        updateProgressFromEvent(e);
     });
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) updateProgressFromEvent(e);
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        isDraggingVolume = false;
+    });
+    
+    // Volume slider support
+    let isDraggingVolume = false;
+    if (els.volumeProgress) {
+        els.volumeProgress.addEventListener('mousedown', (e) => {
+            isDraggingVolume = true;
+            updateVolumeFromEvent(e);
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingVolume) updateVolumeFromEvent(e);
+        });
+    }
+
+    function updateVolumeFromEvent(e) {
+        if (!els.volumeProgress) return;
+        const rect = els.volumeProgress.getBoundingClientRect();
+        let pos = (e.clientX - rect.left) / rect.width;
+        pos = Math.max(0, Math.min(1, pos));
+        
+        // Update UI
+        if (els.volumeFill) els.volumeFill.style.width = `${pos * 100}%`;
+        if (els.volumeThumb) els.volumeThumb.style.left = `${pos * 100}%`;
+        
+        // Update Audio
+        if (els.audioPlayer) els.audioPlayer.volume = pos;
+    }
+    
+    function updateProgressFromEvent(e) {
+        const rect = els.audioProgress.getBoundingClientRect();
+        let pos = (e.clientX - rect.left) / rect.width;
+        pos = Math.max(0, Math.min(1, pos));
+        
+        // Cập nhật giao diện slider ngay lập tức
+        els.audioProgressFill.style.width = `${pos * 100}%`;
+        if (els.audioProgressThumb) els.audioProgressThumb.style.left = `${pos * 100}%`;
+        
+        // Tính giờ
+        if (els.audioPlayer.duration) {
+            const time = pos * els.audioPlayer.duration;
+            els.audioPlayer.currentTime = time;
+            if (els.timeCurrent) els.timeCurrent.textContent = formatTime(time);
+        }
+    }
+    
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+        if (isDragging) return; // Không update từ audio nếu user đang kéo tay
+        const duration = els.audioPlayer.duration;
+        const current = els.audioPlayer.currentTime;
+        if (duration > 0) {
+            const percent = (current / duration) * 100;
+            els.audioProgressFill.style.width = `${percent}%`;
+            if (els.audioProgressThumb) els.audioProgressThumb.style.left = `${percent}%`;
+            if (els.timeCurrent) els.timeCurrent.textContent = formatTime(current);
+        }
+    }
 
 
     // Core Logic
@@ -498,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showProcessingPanel(msg) {
         els.inputCard.style.display = 'none';
+        if (els.featuresBar) els.featuresBar.style.display = 'none';
         els.resultPanel.style.display = 'none';
         els.processingPanel.style.display = 'block';
         els.processingMainTitle.textContent = "🎙 AI ĐANG TỔNG HỢP GIỌNG NÓI";
@@ -523,6 +633,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showResult(blob, sourceText) {
         document.body.classList.add('is-playing');
+        els.inputCard.style.display = 'none';
+        if (els.featuresBar) els.featuresBar.style.display = 'none';
         els.processingPanel.style.display = 'none';
         els.resultPanel.style.display = 'block';
         if (els.resultCanvas) els.resultCanvas.style.display = 'block';
@@ -547,6 +659,9 @@ document.addEventListener('DOMContentLoaded', () => {
         els.audioPlayer.src = audioUrl;
         els.btnDownload.href = audioUrl;
         els.resultSourceLabel.textContent = sourceText;
+        
+        // Bắt đầu nhạc luôn
+        togglePlay();
     }
 
     function resetUI() {
@@ -555,6 +670,12 @@ document.addEventListener('DOMContentLoaded', () => {
         els.resultPanel.style.display = 'none';
         if (els.resultCanvas) els.resultCanvas.style.display = 'none';
         els.inputCard.style.display = 'block';
+        if (els.featuresBar) els.featuresBar.style.display = 'block';
+        
+        // Reset slider
+        els.audioProgressFill.style.width = '0%';
+        if (els.audioProgressThumb) els.audioProgressThumb.style.left = '0%';
+        if (els.timeCurrent) els.timeCurrent.textContent = '0:00';
     }
 
     let startTime = 0;
@@ -727,11 +848,23 @@ document.addEventListener('DOMContentLoaded', () => {
             els.iconPause.style.display = 'block';
         }
         state.isPlaying = !state.isPlaying;
+        if (els.resultPanel) els.resultPanel.classList.toggle('is-playing', state.isPlaying);
         animateWaveform(state.isPlaying);
     }
 
     function initVisualizer() {
         if (!els.resultCanvas) return;
+        
+        // Full screen background setup
+        // Use document.documentElement.clientWidth to exclude scrollbar width, keeping it perfectly centered!
+        els.resultCanvas.width = document.documentElement.clientWidth;
+        els.resultCanvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            if (els.resultCanvas) {
+                els.resultCanvas.width = document.documentElement.clientWidth;
+                els.resultCanvas.height = window.innerHeight;
+            }
+        });
         
         visCtx = els.resultCanvas.getContext('2d');
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -892,37 +1025,125 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.scale(scale, scale);
                 ctx.rotate(rotation);
                 
-                // Outer ring
+                // Outer thick ring
                 ctx.beginPath();
-                ctx.arc(0, 0, radius + 25, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(255, 30, 30, ${0.7 + intensity * 0.8})`;
-                ctx.lineWidth = 2 + (intensity * 6);
+                ctx.arc(0, 0, radius + 40, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(184, 10, 30, ${0.8 + intensity * 0.2})`;
+                ctx.lineWidth = 6 + (intensity * 4);
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#FF3D5E';
                 ctx.stroke();
                 
-                // Inner ring
+                // Inner thin ring
                 ctx.beginPath();
-                ctx.arc(0, 0, radius + 10, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(255, 30, 30, ${0.4 + intensity * 0.7})`;
-                ctx.lineWidth = 1 + (intensity * 4);
+                ctx.arc(0, 0, radius + 15, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(255, 61, 94, ${0.5 + intensity * 0.5})`;
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 0;
                 ctx.stroke();
                 
                 // Roman Numerals
                 const numerals = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
-                ctx.font = 'bold 12px "Times New Roman", serif';
-                ctx.fillStyle = 'rgba(255, 100, 100, 0.9)';
+                ctx.font = 'bold 16px "Times New Roman", serif';
+                ctx.fillStyle = '#FFD9E1';
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#FF3D5E';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 
                 for (let i = 0; i < 12; i++) {
                     const angle = (i * Math.PI / 6) - Math.PI / 2;
-                    const nx = Math.cos(angle) * (radius + 16);
-                    const ny = Math.sin(angle) * (radius + 16);
+                    const nx = Math.cos(angle) * (radius + 28); // Inside the outer ring
+                    const ny = Math.sin(angle) * (radius + 28);
                     ctx.save();
                     ctx.translate(nx, ny);
                     ctx.rotate(angle + Math.PI/2);
                     ctx.fillText(numerals[i], 0, 0);
                     ctx.restore();
                 }
+                
+                // Clock Hands
+                // Second hand (rotates continuously)
+                ctx.rotate(time * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(0, 10);
+                ctx.lineTo(0, -radius - 5);
+                ctx.strokeStyle = `rgba(255, 61, 94, ${0.8 + intensity * 0.5})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Minute hand (rotates only when playing/intensity > 0)
+                // We'll simulate its movement using an accumulated value if possible, or just time * intensity
+                ctx.rotate(-time * 0.1 * (1 + intensity * 5));
+                ctx.beginPath();
+                ctx.moveTo(0, 8);
+                ctx.lineTo(0, -radius + 5);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 + intensity * 0.5})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Center pin
+                ctx.beginPath();
+                ctx.arc(0, 0, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF3D5E';
+                ctx.fill();
+
+                ctx.restore();
+            },
+            drawWaveform: function(ctx, cx, cy, radius, dataArray, bufferLength, time, intensity, isSimulating) {
+                // Horizontal wings waveform for Kurumi
+                const maxBars = 35; // 35 bars per wing
+                ctx.save();
+                
+                ctx.lineCap = 'round';
+                ctx.shadowBlur = 15 + (intensity * 15);
+                ctx.shadowColor = '#FF3D5E';
+
+                window.kurumiSmoothBars = window.kurumiSmoothBars || new Array(maxBars).fill(0);
+                
+                for (let i = 0; i < maxBars; i++) {
+                    let targetVal = 0;
+                    
+                    if (isSimulating) {
+                        const noise = Math.abs(Math.sin(i * 0.3 + time * 5)) * 15;
+                        targetVal = Math.max(2, noise + 5);
+                    } else {
+                        // Lower frequencies near the clock, higher frequencies outwards
+                        const dataIndex = Math.floor(i * (bufferLength / 3) / maxBars);
+                        const rVal = (dataArray ? dataArray[dataIndex] : 0) / 255;
+                        const beatScale = 1 + (intensity * 1.5);
+                        targetVal = Math.max(2, Math.pow(rVal, 1.2) * 80 * beatScale + 5);
+                    }
+                    
+                    window.kurumiSmoothBars[i] = window.kurumiSmoothBars[i] * 0.4 + targetVal * 0.6;
+                    const barHeight = Math.min(100, window.kurumiSmoothBars[i]);
+                    
+                    const startXOffset = radius + 55; // Start just outside the thick ring
+                    const barSpacing = 8;
+                    const xOffset = startXOffset + i * barSpacing;
+                    
+                    // Gradient per bar
+                    const barGrad = ctx.createLinearGradient(0, cy - barHeight, 0, cy + barHeight);
+                    barGrad.addColorStop(0, 'rgba(184, 10, 30, 0.1)');
+                    barGrad.addColorStop(0.5, '#FF3D5E');
+                    barGrad.addColorStop(1, 'rgba(184, 10, 30, 0.1)');
+                    
+                    ctx.strokeStyle = barGrad;
+                    ctx.lineWidth = 4;
+                    
+                    // Left wing
+                    ctx.beginPath();
+                    ctx.moveTo(cx - xOffset, cy - barHeight);
+                    ctx.lineTo(cx - xOffset, cy + barHeight);
+                    ctx.stroke();
+
+                    // Right wing
+                    ctx.beginPath();
+                    ctx.moveTo(cx + xOffset, cy - barHeight);
+                    ctx.lineTo(cx + xOffset, cy + barHeight);
+                    ctx.stroke();
+                }
+                
                 ctx.restore();
             }
         },
@@ -1010,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const width = canvas.width;
         const height = canvas.height;
-        const centerY = height / 2;
+        const centerY = height / 2 - 50;
         const centerX = width / 2;
         
         const themeName = state.selectedVoice || 'elaina';
@@ -1171,10 +1392,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.translate(centerX, centerY);
         ctx.scale(avatarScale, avatarScale);
         
-        // Draw Avatar Image FIRST so rings go on top
-        const avatarImg = new Image();
-        const avatarMap = { 'kurumi': 'avatar/avatar_kurumi.png', 'elaina': 'avatar/avatar_elaina.png', 'miku': 'avatar/avatar_miku.png' };
-        avatarImg.src = avatarMap[themeName] || 'avatar/avatar_kurumi.png';
+        // Cache Avatar Image to prevent flickering on every frame
+        if (!state.avatarCache) state.avatarCache = {};
+        if (!state.avatarCache[themeName]) {
+            const img = new Image();
+            const avatarMap = { 'kurumi': 'avatar/avatar_kurumi.png', 'elaina': 'avatar/avatar_elaina.png', 'miku': 'avatar/avatar_miku.png' };
+            img.src = avatarMap[themeName] || 'avatar/avatar_kurumi.png';
+            state.avatarCache[themeName] = img;
+        }
+        const avatarImg = state.avatarCache[themeName];
         
         ctx.save();
         ctx.beginPath();
@@ -1203,78 +1429,82 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore(); // Restore scale and translation for Avatar Image
 
         // Draw Avatar Ring (3. Ring rotating handled inside theme)
-        theme.drawRing(ctx, centerX, centerY, avatarRadius, time, intensity);
+        if (theme.drawRing) theme.drawRing(ctx, centerX, centerY, avatarRadius, time, intensity);
 
         // 3. Sóng Âm (Waveform) - Smooth Interpolation
-        const barWidth = 3;
-        const spacing = 5;
-        const waveOffset = theme.waveOffset || 115;
-        const maxBars = Math.min(24, Math.floor((width/2 - waveOffset) / (barWidth + spacing)));
-        const waveEnd = waveOffset + maxBars * (barWidth + spacing);
-        
-        ctx.lineCap = 'round';
-        
-        // Draw center axis line
-        ctx.shadowBlur = 10 + (intensity * 30); // 6. Waveform glow
-        ctx.shadowColor = theme.glowColor;
-        ctx.strokeStyle = theme.glowColor;
-        ctx.lineWidth = 1 + (intensity * 3);
-        ctx.beginPath();
-        ctx.moveTo(centerX + waveOffset - 5, centerY);
-        ctx.lineTo(centerX + waveEnd, centerY);
-        ctx.moveTo(centerX - waveOffset + 5, centerY);
-        ctx.lineTo(centerX - waveEnd, centerY);
-        ctx.stroke();
-        
-        ctx.shadowBlur = 15 + (intensity * 50); 
-        ctx.shadowColor = theme.glowColor;
-        ctx.strokeStyle = theme.coreColor;
-        ctx.lineWidth = barWidth + (intensity * 4); 
-        
-        ctx.globalAlpha = Math.min(1, 0.6 + intensity * 0.8);
-
-        // Smooth array logic
-        state.smoothBars = state.smoothBars || new Array(maxBars).fill(0);
-
-        for (let i = 0; i < maxBars; i++) {
-            let targetVal = 0;
-            let dropoff = Math.sin((i / maxBars) * Math.PI); // Window function
+        if (theme.drawWaveform) {
+            theme.drawWaveform(ctx, centerX, centerY, avatarRadius, dataArray, bufferLength, time, intensity, isSimulating);
+        } else {
+            const barWidth = 3;
+            const spacing = 5;
+            const waveOffset = theme.waveOffset || 115;
+            const maxBars = Math.min(24, Math.floor((width/2 - waveOffset) / (barWidth + spacing)));
+            const waveEnd = waveOffset + maxBars * (barWidth + spacing);
             
-            if (isSimulating) {
-                const wave1 = Math.sin(i * 0.5 + time * 8) * 15;
-                const wave2 = Math.sin(i * 1.2 - time * 4) * 20;
-                const wave3 = Math.sin(i * 0.2 + time * 2) * 25;
-                let noise = Math.abs(wave1 + wave2 + wave3) * Math.pow(dropoff, 1.2);
-                if (Math.random() > 0.8) noise += Math.random() * 20 * dropoff;
-                targetVal = Math.max(2, noise + 4);
-            } else {
-                const dataIndex = Math.floor(i * (bufferLength / 2.5) / maxBars);
-                const rVal = (dataArray ? dataArray[dataIndex] : 0) / 255;
-                const beatScale = 1 + (intensity * 1.5); // Reduce jump height multiplier
-                targetVal = Math.max(2, Math.pow(rVal, 1.3) * 60 * Math.pow(dropoff, 0.8) * beatScale + 4);
+            ctx.lineCap = 'round';
+            
+            // Draw center axis line
+            ctx.shadowBlur = 10 + (intensity * 30); // 6. Waveform glow
+            ctx.shadowColor = theme.glowColor;
+            ctx.strokeStyle = theme.glowColor;
+            ctx.lineWidth = 1 + (intensity * 3);
+            ctx.beginPath();
+            ctx.moveTo(centerX + waveOffset - 5, centerY);
+            ctx.lineTo(centerX + waveEnd, centerY);
+            ctx.moveTo(centerX - waveOffset + 5, centerY);
+            ctx.lineTo(centerX - waveEnd, centerY);
+            ctx.stroke();
+            
+            ctx.shadowBlur = 15 + (intensity * 50); 
+            ctx.shadowColor = theme.glowColor;
+            ctx.strokeStyle = theme.coreColor;
+            ctx.lineWidth = barWidth + (intensity * 4); 
+            
+            ctx.globalAlpha = Math.min(1, 0.6 + intensity * 0.8);
+
+            // Smooth array logic
+            state.smoothBars = state.smoothBars || new Array(maxBars).fill(0);
+
+            for (let i = 0; i < maxBars; i++) {
+                let targetVal = 0;
+                let dropoff = Math.sin((i / maxBars) * Math.PI); // Window function
+                
+                if (isSimulating) {
+                    const wave1 = Math.sin(i * 0.5 + time * 8) * 15;
+                    const wave2 = Math.sin(i * 1.2 - time * 4) * 20;
+                    const wave3 = Math.sin(i * 0.2 + time * 2) * 25;
+                    let noise = Math.abs(wave1 + wave2 + wave3) * Math.pow(dropoff, 1.2);
+                    if (Math.random() > 0.8) noise += Math.random() * 20 * dropoff;
+                    targetVal = Math.max(2, noise + 4);
+                } else {
+                    const dataIndex = Math.floor(i * (bufferLength / 2.5) / maxBars);
+                    const rVal = (dataArray ? dataArray[dataIndex] : 0) / 255;
+                    const beatScale = 1 + (intensity * 1.5); // Reduce jump height multiplier
+                    targetVal = Math.max(2, Math.pow(rVal, 1.3) * 60 * Math.pow(dropoff, 0.8) * beatScale + 4);
+                }
+                
+                // Smooth Interpolation cho cột sóng (Lerp) - Giảm độ trễ, bám sát targetVal ngay lập tức
+                state.smoothBars[i] = state.smoothBars[i] * 0.2 + targetVal * 0.8;
+                const barHeight = Math.min(140, state.smoothBars[i]); // Cap max height to 140px
+                
+                const xOffset = waveOffset + i * (barWidth + spacing);
+                
+                // Draw Right Side
+                ctx.beginPath();
+                ctx.moveTo(centerX + xOffset, centerY - barHeight);
+                ctx.lineTo(centerX + xOffset, centerY + barHeight);
+                ctx.stroke();
+                
+                // Draw Left Side
+                ctx.beginPath();
+                ctx.moveTo(centerX - xOffset, centerY - barHeight);
+                ctx.lineTo(centerX - xOffset, centerY + barHeight);
+                ctx.stroke();
             }
             
-            // Smooth Interpolation cho cột sóng (Lerp) - Giảm độ trễ, bám sát targetVal ngay lập tức
-            state.smoothBars[i] = state.smoothBars[i] * 0.2 + targetVal * 0.8;
-            const barHeight = Math.min(140, state.smoothBars[i]); // Cap max height to 140px
-            
-            const xOffset = waveOffset + i * (barWidth + spacing);
-            
-            // Draw Right Side
-            ctx.beginPath();
-            ctx.moveTo(centerX + xOffset, centerY - barHeight);
-            ctx.lineTo(centerX + xOffset, centerY + barHeight);
-            ctx.stroke();
-            
-            // Draw Left Side
-            ctx.beginPath();
-            ctx.moveTo(centerX - xOffset, centerY - barHeight);
-            ctx.lineTo(centerX - xOffset, centerY + barHeight);
-            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1.0; 
         }
-        
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1.0; 
         
         ctx.restore(); // Restore Camera Shake
     }
@@ -1418,8 +1648,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.translate(cx, centerY);
             ctx.scale(avatarScale, avatarScale);
             
-            const avatarImg = new Image();
-            avatarImg.src = `avatar/avatar_${tName}.png`;
+            if (!state.avatarCache) state.avatarCache = {};
+            if (!state.avatarCache[tName]) {
+                const img = new Image();
+                img.src = `avatar/avatar_${tName}.png`;
+                state.avatarCache[tName] = img;
+            }
+            const avatarImg = state.avatarCache[tName];
+            
             ctx.save();
             ctx.beginPath(); ctx.arc(0, 0, avatarRadius, 0, Math.PI * 2); ctx.clip();
             if (iLocal > 0.3) { ctx.globalCompositeOperation = 'lighter'; ctx.shadowBlur = 20 * iLocal; ctx.shadowColor = themeObj.glowColor; }
@@ -1479,8 +1715,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isSimulating) {
                 targetVal = Math.max(2, Math.abs(Math.sin(i*0.1 + time*5)*15) + 4);
             } else {
-                // Map i vào dataArray (chỉ lấy nửa đầu của FFT cho bass/mid)
-                const dataIndex = Math.floor(ratio * (bufferLength / 3));
+                // Map i vào dataArray đối xứng qua tâm (tâm là bass, 2 bên là treble)
+                const symRatio = ratio < 0.5 ? (1 - (ratio * 2)) : ((ratio - 0.5) * 2);
+                const dataIndex = Math.floor(symRatio * (bufferLength / 3));
                 const rVal = (dataArray ? dataArray[dataIndex] : 0) / 255;
                 const dropoff = Math.sin(ratio * Math.PI); // Ở 2 mép thấp, ở giữa cao
                 targetVal = Math.max(2, Math.pow(rVal, 1.3) * 70 * Math.pow(dropoff, 0.5) * (1 + iLocal) + 4);
@@ -1571,13 +1808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         drawThemeVisualizer(els.processingCanvas.getContext('2d'), els.processingCanvas, null, 0, Date.now()/1000, true, procParticles);
     }
 
-    function updateProgress() {
-        const { currentTime, duration } = els.audioPlayer;
-        if (!duration) return;
-        const percent = (currentTime / duration) * 100;
-        els.audioProgressFill.style.width = `${percent}%`;
-        els.timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-    }
+
 
     function formatTime(seconds) {
         const m = Math.floor(seconds / 60);
