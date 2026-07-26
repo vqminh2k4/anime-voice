@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloadedVoices = {
         'kurumi': new Audio('audio/ara_ara.mp3'),
         'elaina': new Audio('audio/elaina_watashi_wa.mp3'),
-        'miku': new Audio('audio/miku_voice.mp3')
+        'miku': new Audio('audio/miku_voice_clip.mp3')
     };
     
     let currentCharacterAudio = null;
