@@ -1231,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const width = canvas.width;
         const height = canvas.height;
-        const centerY = height / 2 - 50;
+        const centerY = isSimulating ? height / 2 : height / 2 - 50;
         const centerX = width / 2;
         
         const themeName = state.selectedVoice || 'elaina';
