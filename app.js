@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultAvatar: document.getElementById('resultAvatar'),
         resultTitle: document.getElementById('resultTitle'),
         resultCanvas: document.getElementById('resultCanvas'),
-        processingCanvas: document.getElementById('processingCanvas')
+        processingCanvas: document.getElementById('processingCanvas'),
+        btnCancelJob: document.getElementById('btnCancelJob')
     };
 
     // Visualizer state
@@ -76,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         isProcessing: false,
         isPlaying: false,
+        currentJobId: null,
         serverUrl: 'https://subway-percent-senior.ngrok-free.dev',
         isDuetMode: false,
         selectedVoice: 'kurumi',
@@ -499,6 +501,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    if (els.btnCancelJob) {
+        els.btnCancelJob.addEventListener('click', async () => {
+            if (!state.currentJobId) {
+                resetUI();
+                state.isProcessing = false;
+                return;
+            }
+            try {
+                els.btnCancelJob.textContent = 'ĐANG HỦY...';
+                await fetch(state.serverUrl + '/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': '1'
+                    },
+                    body: JSON.stringify({ job_id: state.currentJobId })
+                });
+            } catch (e) {
+                console.error("Cancel failed:", e);
+            }
+            if (state.progressInterval) clearInterval(state.progressInterval);
+            state.isProcessing = false;
+            state.currentJobId = null;
+            els.btnCancelJob.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> HỦY YÊU CẦU';
+            resetUI();
+            showToast('Đã hủy yêu cầu!', 'warning');
+        });
+    }
 
     // Core Logic
     async function processUrl(url) {
@@ -698,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function pollJob(job_id, sourceText) {
+        state.currentJobId = job_id;
         startTime = Date.now();
         const timerEl = document.getElementById('processingTimer');
         const etaEl = els.processingETA;
@@ -765,7 +796,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.status === 'done' || data.status === 'completed' || data.status === 'success') {
                     clearInterval(state.progressInterval);
                     clearInterval(tipInterval);
-                    els.processingSubTitle.textContent = '✔ AI Cover hoàn tất. Đang chuẩn bị phát...';
+                    const totalTime = timerEl ? timerEl.textContent : '00:00';
+                    els.processingSubTitle.textContent = `🎉 Hoàn tất! Tổng thời gian chạy: ${totalTime}`;
                     els.progressBar.style.width = '100%';
                     els.progressBar.style.background = 'linear-gradient(90deg, #00f2fe, #4facfe)';
                     els.progressPercentageText.textContent = '100%';
@@ -803,14 +835,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Update timeline
                         els.timelineSteps[0].classList.add('active'); // always active
-                        if (p.pct > 25) { els.timelineLines[0].style.width = '100%'; els.timelineSteps[1].classList.add('active'); }
-                        else { els.timelineLines[0].style.width = `${(p.pct/25)*100}%`; }
+                        // Line 1: Phân tích (0% - 10%)
+                        if (p.pct >= 10) { els.timelineLines[0].style.width = '100%'; els.timelineSteps[1].classList.add('active'); }
+                        else { els.timelineLines[0].style.width = `${(p.pct/10)*100}%`; els.timelineSteps[1].classList.remove('active'); }
                         
-                        if (p.pct > 50) { els.timelineLines[1].style.width = '100%'; els.timelineSteps[2].classList.add('active'); }
-                        else if (p.pct > 25) { els.timelineLines[1].style.width = `${((p.pct-25)/25)*100}%`; }
+                        // Line 2: Lọc nhiễu (10% - 60%)
+                        if (p.pct >= 60) { els.timelineLines[1].style.width = '100%'; els.timelineSteps[2].classList.add('active'); }
+                        else if (p.pct > 10) { els.timelineLines[1].style.width = `${((p.pct-10)/50)*100}%`; els.timelineSteps[2].classList.remove('active'); }
+                        else { els.timelineLines[1].style.width = '0%'; els.timelineSteps[2].classList.remove('active'); }
                         
-                        if (p.pct > 75) { els.timelineLines[2].style.width = '100%'; els.timelineSteps[3].classList.add('active'); }
-                        else if (p.pct > 50) { els.timelineLines[2].style.width = `${((p.pct-50)/25)*100}%`; }
+                        // Line 3: AI Cover (60% - 85%)
+                        if (p.pct >= 85) { els.timelineLines[2].style.width = '100%'; els.timelineSteps[3].classList.add('active'); }
+                        else if (p.pct > 60) { els.timelineLines[2].style.width = `${((p.pct-60)/25)*100}%`; els.timelineSteps[3].classList.remove('active'); }
+                        else { els.timelineLines[2].style.width = '0%'; els.timelineSteps[3].classList.remove('active'); }
                     }
 
                     if (p.eta && p.step === 'separating') {
@@ -819,6 +856,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         etaEl.textContent = `${etaSec} giây`;
                     } else if (p.eta) {
                         etaEl.textContent = p.eta;
+                    } else if (etaEl) {
+                        etaEl.textContent = '--:--';
                     }
                 }
             } catch (err) {
@@ -1513,240 +1552,427 @@ document.addEventListener('DOMContentLoaded', () => {
     // DUET MODE VISUALIZER (Bản sắc Song Ca)
     // ==========================================
     function drawDuetVisualizer(ctx, canvas, dataArray, bufferLength, time, isSimulating, particlesArr) {
-        const width = canvas.width;
-        const height = canvas.height;
-        const centerY = height / 2;
-        const centerLeft = width * 0.25;
-        const centerRight = width * 0.75;
-        
-        // Swap the character assignments to match the background (V2 on left, V1 on right)
-        const theme1 = VIS_THEMES[state.selectedVoice2] || VIS_THEMES['elaina']; // Left
-        const theme2 = VIS_THEMES[state.selectedVoice] || VIS_THEMES['kurumi']; // Right
-        
+        const width    = canvas.width;
+        const height   = canvas.height;
+        const centerY  = height / 2;
+
+        const centerLeft  = width * 0.20;
+        const centerRight = width * 0.80;
+        const centerX     = width * 0.50;
+
+        const theme1 = VIS_THEMES[state.selectedVoice2] || VIS_THEMES['elaina'];
+        const theme2 = VIS_THEMES[state.selectedVoice]  || VIS_THEMES['kurumi'];
+
         ctx.clearRect(0, 0, width, height);
 
-        // --- 1. TÍNH TOÁN CƯỜNG ĐỘ (Intensity giả lập đối đáp) ---
+        // --- INTENSITY & BREATHING ---
         let iLeft = 0, iRight = 0;
         if (!isSimulating && dataArray) {
-            // Chia dải tần: Bass/Mid cho Left, Mid/Treble cho Right
             let sumL = 0, sumR = 0;
             const third = Math.floor(bufferLength / 3);
             for (let i = 0; i < third; i++) sumL += dataArray[i];
             for (let i = third; i < third*2; i++) sumR += dataArray[i];
-            
-            iLeft = (sumL / third) / 255;
+            iLeft  = (sumL / third) / 255;
             iRight = (sumR / third) / 255;
-            
-            state.smoothILeft = (state.smoothILeft || 0) * 0.8 + iLeft * 0.2;
-            state.smoothIRight = (state.smoothIRight || 0) * 0.8 + iRight * 0.2;
-            iLeft = Math.pow(state.smoothILeft, 1.5);
+            state.smoothILeft  = (state.smoothILeft  || 0) * 0.75 + iLeft  * 0.25;
+            state.smoothIRight = (state.smoothIRight || 0) * 0.75 + iRight * 0.25;
+            iLeft  = Math.pow(state.smoothILeft,  1.5);
             iRight = Math.pow(state.smoothIRight, 1.5);
         } else {
-            iLeft = Math.max(0, Math.sin(time * 6)) * 0.4;
-            iRight = Math.max(0, Math.cos(time * 6)) * 0.4;
+            iLeft  = Math.max(0, Math.sin(time * 1.8)) * 0.45;
+            iRight = Math.max(0, Math.cos(time * 1.8)) * 0.45;
         }
-
         const maxI = Math.max(iLeft, iRight);
-        
-        // Cập nhật brightness tổng
-        document.body.style.filter = `brightness(${100 + maxI * 40}%)`;
+        document.body.style.filter = `brightness(${100 + maxI * 15}%)`;
 
-        // Camera Shake tổng hợp
+        const breathing = Math.sin(time * 1.5) * 0.5 + 0.5; // 0 to 1
+        const globalGlowMod = 1 + breathing * 0.25;
+
+        // --- SOFT BACKGROUND BLOOM (Preserving dark contrast) ---
         ctx.save();
-        if (maxI > 0.4) {
-            const shake = (maxI - 0.4) * 6;
-            ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+        ctx.globalCompositeOperation = 'lighter';
+        const bgBloom = ctx.createRadialGradient(centerX, centerY, height * 0.1, centerX, centerY, width * 0.5);
+        bgBloom.addColorStop(0, 'rgba(180, 100, 255, 0.05)'); 
+        bgBloom.addColorStop(0.5, 'rgba(100, 150, 255, 0.02)'); 
+        bgBloom.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = bgBloom;
+        ctx.fillRect(0, 0, width, height);
+        ctx.restore();
+
+        // --- SIZING ---
+        const avatarRadius = width * 0.042;
+        const heartBaseSize = (width * 0.012) * 1.15; // Increased further from 0.95 to 1.15
+        const heartRingInner = heartBaseSize * 2.8;
+        const heartRingMiddle = heartBaseSize * 3.8;
+        const heartRingOuter = heartBaseSize * 5.0;
+
+        // --- GLOBAL GRADIENT (Distinct Left/Right colors blending at center) ---
+        const waveGrad = ctx.createLinearGradient(0, 0, width, 0);
+        waveGrad.addColorStop(0.0,  theme1.glowColor);
+        waveGrad.addColorStop(0.2,  theme1.glowColor); // Avatar 1 is pure
+        waveGrad.addColorStop(0.8,  theme2.glowColor); // Avatar 2 is pure
+        waveGrad.addColorStop(1.0,  theme2.glowColor);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter'; 
+
+        // --- 4. DISCRETE CONTINUOUS CLUSTERS (Liquid Water, 4 Gaps) ---
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter'; 
+        
+        const barSpacing = 2.2;
+        
+        // The exact anchor points where the wave MUST pinch to ZERO height
+        const p0 = 0;
+        const p1 = centerLeft;
+        const p2 = centerX;
+        const p3 = centerRight;
+        const p4 = width;
+
+        const nBars = Math.floor(width / barSpacing);
+        const targetHeights = new Float32Array(nBars);
+        const rawFft = new Float32Array(nBars);
+
+        for (let i = 0; i < nBars; i++) {
+            const xPos = i * barSpacing;
+            let ratio = -1; 
+            
+            if (xPos >= p0 && xPos <= p1) ratio = (xPos - p0) / (p1 - p0);
+            else if (xPos >= p1 && xPos <= p2) ratio = (xPos - p1) / (p2 - p1);
+            else if (xPos >= p2 && xPos <= p3) ratio = (xPos - p2) / (p3 - p2);
+            else if (xPos >= p3 && xPos <= p4) ratio = (xPos - p3) / (p4 - p3);
+
+            if (ratio !== -1) {
+                let val = 0;
+                // symRatio peaks at 1 in the middle of the gap, 0 at edges
+                const symRatio = Math.sin(ratio * Math.PI); 
+                if (dataArray && bufferLength > 0) {
+                    const bin = Math.floor(Math.pow(1.0 - symRatio, 1.2) * (bufferLength * 0.3));
+                    val = (dataArray[bin] || 0) / 255.0; 
+                } else if (isSimulating) {
+                    val = Math.abs(Math.sin(symRatio * 12 - time * 3)) * 0.4 
+                        + Math.abs(Math.sin(symRatio * 25 - time * 5)) * 0.3 
+                        + 0.2;
+                }
+                rawFft[i] = val;
+            }
+        }
+        
+        // Spatial Smoothing
+        const smoothFft = new Float32Array(nBars);
+        const blurRadius = 4;
+        for (let i = 0; i < nBars; i++) {
+            if (rawFft[i] === 0) continue; 
+            let sum = 0, weightSum = 0;
+            for (let j = -blurRadius; j <= blurRadius; j++) {
+                const idx = i + j;
+                if (idx >= 0 && idx < nBars && rawFft[idx] > 0) {
+                    const weight = Math.exp(-(j * j) / (2 * blurRadius));
+                    sum += rawFft[idx] * weight;
+                    weightSum += weight;
+                }
+            }
+            smoothFft[i] = weightSum > 0 ? sum / weightSum : 0;
         }
 
-        // --- 3. HỆ THỐNG HẠT ĐA VÙNG (Dual Particle Engine) ---
-        if (maxI > 0.4 && Math.random() > 0.4 && particlesArr.length < 100) {
-            // Sinh hạt bên nào hát to hơn, hoặc cả 2
-            if (iLeft > 0.3) {
-                particlesArr.push({
-                    x: centerLeft, y: centerY, side: 1,
-                    size: Math.random() * 0.5 + 0.5,
-                    speedX: (Math.random() - 0.5) * 15 * iLeft,
-                    speedY: (Math.random() - 0.5) * 15 * iLeft,
-                    alpha: 1.0, type: 'burst'
-                });
-            }
-            if (iRight > 0.3) {
-                particlesArr.push({
-                    x: centerRight, y: centerY, side: 2,
-                    size: Math.random() * 0.5 + 0.5,
-                    speedX: (Math.random() - 0.5) * 15 * iRight,
-                    speedY: (Math.random() - 0.5) * 15 * iRight,
-                    alpha: 1.0, type: 'burst'
-                });
+        const pump = 0.4 + maxI * 1.8; 
+
+        // User's custom amplitude envelope
+        const envProfile = [0.02, 0.05, 0.10, 0.18, 0.30, 0.45, 0.60, 0.45, 0.30, 0.18, 0.10, 0.05, 0.02];
+        const getEnvelope = (r) => {
+            const idx = Math.max(0, Math.min(1, r)) * (envProfile.length - 1);
+            const i0 = Math.floor(idx);
+            const i1 = Math.min(envProfile.length - 1, i0 + 1);
+            const f = idx - i0;
+            return envProfile[i0] * (1 - f) + envProfile[i1] * f;
+        };
+
+        for (let i = 0; i < nBars; i++) {
+            const xPos = i * barSpacing;
+            let ratio = -1;
+            
+            if (xPos >= p0 && xPos <= p1) ratio = (xPos - p0) / (p1 - p0);
+            else if (xPos >= p1 && xPos <= p2) ratio = (xPos - p1) / (p2 - p1);
+            else if (xPos >= p2 && xPos <= p3) ratio = (xPos - p2) / (p3 - p2);
+            else if (xPos >= p3 && xPos <= p4) ratio = (xPos - p3) / (p4 - p3);
+
+            if (ratio !== -1) {
+                const envelope = getEnvelope(ratio);
+                const h = Math.pow(smoothFft[i], 0.7);
+                
+                // All 4 gaps now use the exact same amplitude scale (0.22 * pump)
+                const scale = 0.22 * pump;
+                
+                // Apply the exact envelope shape to the dynamic height
+                targetHeights[i] = (0.02 + h * 0.98) * envelope * height * scale; 
             }
         }
+
+        // Clamp jumps 
+        const maxJump = barSpacing * 1.5; 
+        for (let i = 1; i < nBars; i++) {
+            if (targetHeights[i] > targetHeights[i-1] + maxJump) targetHeights[i] = targetHeights[i-1] + maxJump;
+            else if (targetHeights[i] < targetHeights[i-1] - maxJump) targetHeights[i] = targetHeights[i-1] - maxJump;
+        }
+        for (let i = nBars - 2; i >= 0; i--) {
+            if (targetHeights[i] > targetHeights[i+1] + maxJump) targetHeights[i] = targetHeights[i+1] + maxJump;
+            else if (targetHeights[i] < targetHeights[i+1] - maxJump) targetHeights[i] = targetHeights[i+1] - maxJump;
+        }
+
+        if (!state.spec || state.spec.length !== nBars) state.spec = new Float32Array(nBars);
+        for (let i = 0; i < nBars; i++) {
+            state.spec[i] = state.spec[i] * 0.8 + targetHeights[i] * 0.2; 
+        }
+
+        // --- RENDER BARS WITH PEAK CAPS (Style 4) ---
+        ctx.shadowBlur = 15 * globalGlowMod;
+        ctx.shadowColor = '#cc88ff';
         
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = '20px Arial';
-        
-        particlesArr.forEach((p, idx) => {
-            const theme = p.side === 1 ? theme1 : theme2;
-            const tName = p.side === 1 ? state.selectedVoice2 : state.selectedVoice;
-            const iLocal = p.side === 1 ? iLeft : iRight;
+        ctx.strokeStyle = waveGrad; 
+
+        const ekgW = heartBaseSize * 1.7; // Reverted back to 1.7
+
+        // 1. Draw Vertical Bars (Dimmer)
+        ctx.globalAlpha = 0.4; 
+        ctx.lineWidth = 1.5; 
+        ctx.lineCap = 'round'; 
+        ctx.beginPath();
+        for (let i = 0; i < nBars; i++) {
+            if (i % 2 !== 0) continue; // Space out bars for a clean equalizer look
+            const xPos = i * barSpacing;
+            if (Math.abs(xPos - centerX) <= ekgW) continue; // Skip inside heart for EKG
+
+            const h = state.spec[i];
+            ctx.moveTo(xPos, centerY - h);
+            ctx.lineTo(xPos, centerY + h);
+        }
+        ctx.stroke();
+
+        // 2. Draw Peak Caps (Brighter, Thicker Dots)
+        ctx.shadowBlur = 20 * globalGlowMod; // Extra glow for the caps
+        ctx.globalAlpha = 1.0; 
+        ctx.lineWidth = 3.2; 
+        ctx.lineCap = 'round'; 
+        ctx.beginPath();
+        for (let i = 0; i < nBars; i++) {
+            if (i % 2 !== 0) continue; 
+            const xPos = i * barSpacing;
+            if (Math.abs(xPos - centerX) <= ekgW) continue; // Skip inside heart for EKG
+
+            const h = state.spec[i];
             
-            let speedMult = 1 + (iLocal * 5);
-            let char = theme.particles.text[idx % theme.particles.text.length];
+            // Top Cap
+            ctx.moveTo(xPos, centerY - h);
+            ctx.lineTo(xPos, centerY - h + 0.1);
             
-            // Vật lý tương tự single mode nhưng bị ảnh hưởng bởi side
-            if (tName === 'kurumi') { p.speedY -= 0.15; if (char === '🦋') p.speedX += Math.sin(time*4+idx)*0.5; } 
-            else if (tName === 'elaina') { p.speedY += 0.05; p.speedX += 0.03; if (char === '🦋') speedMult = iLocal<0.3?0.3:6; } 
-            else if (tName === 'miku') { p.speedY -= 0.03; if (char === '🌸' || char === '🍃') { p.speedY+=0.06; p.speedX+=Math.sin(time*2+idx)*0.2; } }
-            
-            // Gió đối lưu về giữa
-            if (p.side === 1) p.speedX += 0.02; // Bị đẩy về phải
-            if (p.side === 2) p.speedX -= 0.02; // Bị đẩy về trái
-            
-            p.speedX *= 0.99; p.speedY *= 0.99;
-            p.x += p.speedX * speedMult; p.y += p.speedY * speedMult;
-            if (p.type === 'burst') p.alpha -= 0.01;
-            
-            if (p.alpha <= 0 || p.x < -20 || p.x > width+20 || p.y < -20 || p.y > height+20) {
-                if (p.type === 'burst') { particlesArr.splice(idx, 1); return; }
-                p.side = Math.random() > 0.5 ? 1 : 2;
-                p.x = p.side === 1 ? Math.random() * (width/2) : (width/2) + Math.random() * (width/2);
-                p.y = Math.random() * height;
-                p.speedX = (Math.random() - 0.5) * 2;
-                p.speedY = (Math.random() - 0.5) * 2;
-                p.alpha = Math.random() * 0.5 + 0.3;
+            // Bottom Cap
+            if (h > 1.5) {
+                ctx.moveTo(xPos, centerY + h);
+                ctx.lineTo(xPos, centerY + h + 0.1);
             }
+        }
+        ctx.stroke();
+
+        // 3. Draw the EKG inside the heart
+        const ekgH = heartBaseSize * 1.0 * (0.4 + maxI * 0.6); // Scale amplitude safely
+        
+        const drawEKGPath = () => {
+            ctx.beginPath();
+            ctx.moveTo(centerX - ekgW, centerY); 
+            ctx.lineTo(centerX - ekgW * 0.6, centerY);
+            ctx.lineTo(centerX - ekgW * 0.5, centerY - ekgH * 0.3); // Spike UP
+            ctx.lineTo(centerX - ekgW * 0.4, centerY + ekgH * 0.15); // Dip DOWN
+            ctx.lineTo(centerX - ekgW * 0.3, centerY); // Flat
+            ctx.lineTo(centerX - ekgW * 0.2, centerY); // Flat
+            ctx.lineTo(centerX - ekgW * 0.15, centerY - ekgH * 0.1); // Tiny UP
             
-            ctx.fillStyle = theme.particles.colors + p.alpha + ')';
+            // Main Heartbeat Spike
+            ctx.lineTo(centerX, centerY - ekgH * 1.0); // HUGE UP
+            ctx.lineTo(centerX + ekgW * 0.1, centerY + ekgH * 0.8); // HUGE DOWN
+            
+            ctx.lineTo(centerX + ekgW * 0.2, centerY - ekgH * 0.3); // Medium UP
+            ctx.lineTo(centerX + ekgW * 0.3, centerY); // Flat
+            ctx.lineTo(centerX + ekgW * 0.45, centerY); // Flat
+            ctx.lineTo(centerX + ekgW * 0.5, centerY + ekgH * 0.2); // Dip DOWN
+            ctx.lineTo(centerX + ekgW * 0.6, centerY - ekgH * 0.35); // Peak UP
+            ctx.lineTo(centerX + ekgW * 0.7, centerY); // Flat
+            
+            ctx.lineTo(centerX + ekgW, centerY);
+            ctx.stroke();
+        };
+
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        ctx.shadowBlur = 0; // Disable shadowBlur since we use multi-stroke for gradient glow
+
+        // Outer Glow (Thickest)
+        ctx.globalAlpha = 0.25;
+        ctx.lineWidth = 12.0;
+        ctx.strokeStyle = waveGrad; // Use the global gradient for perfect seamless matching
+        drawEKGPath();
+
+        // Base Glow
+        ctx.globalAlpha = 0.5;
+        ctx.lineWidth = 6.0;
+        drawEKGPath();
+
+        // Inner Glow
+        ctx.globalAlpha = 1.0;
+        ctx.lineWidth = 2.5;
+        drawEKGPath();
+
+        // Bright Core (White)
+        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = '#ffffff';
+        drawEKGPath();
+
+        ctx.restore();
+
+        // --- 3. HEART HUD ---
+        ctx.save();
+        ctx.translate(centerX, centerY);
+
+        const haloPulse = 1 + maxI * 0.3 + breathing * 0.15;
+        const haloGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, heartRingOuter * 2.5);
+        haloGrad.addColorStop(0, 'rgba(255, 100, 200, 0.1)'); 
+        haloGrad.addColorStop(0.4, 'rgba(180, 80, 255, 0.04)');
+        haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.save();
+        ctx.scale(haloPulse, haloPulse);
+        ctx.fillStyle = haloGrad;
+        ctx.beginPath(); ctx.arc(0, 0, heartRingOuter * 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+
+        const hPulse = 1 + maxI * 0.15 + breathing * 0.05;
+        ctx.scale(hPulse, hPulse);
+        const heartThemeColor = '#cc88ff';
+
+        ctx.beginPath(); ctx.arc(0, 0, heartRingOuter, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(200, 100, 255, 0.03)'; ctx.shadowBlur = 10; ctx.fill();
+
+        // Refined HUD Rings (Slightly thinner, multi-pass bloom)
+        const renderRing = (radius, angleOffset, angleSpan, w, color, baseAlpha, dash) => {
             ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(time * (idx%3===0?1:-1)*0.5 + idx);
-            ctx.scale(p.size, p.size);
-            ctx.fillText(char, 0, 0);
+            ctx.rotate(angleOffset);
+            if (dash) ctx.setLineDash(dash);
+            ctx.strokeStyle = color;
+            ctx.shadowColor = color;
+            
+            const drawPath = () => {
+                ctx.beginPath(); ctx.arc(0, 0, radius, 0, angleSpan); ctx.stroke();
+            };
+
+            ctx.lineWidth = w * 1.5; ctx.shadowBlur = 15 * globalGlowMod; ctx.globalAlpha = baseAlpha * 0.25; drawPath();
+            ctx.lineWidth = w * 0.8; ctx.shadowBlur = 5 * globalGlowMod; ctx.globalAlpha = baseAlpha; drawPath();
             ctx.restore();
-        });
+        };
 
-        // --- 4. SONG SINH AVATAR & RINGS ---
-        const drawSideAvatar = (side, cx, iLocal, themeObj, tName) => {
-            const avatarRadius = 60; // Nhỏ hơn một chút
-            
-            // Orbit Particles
-            if (!state[`orbitParticles${side}`]) {
-                state[`orbitParticles${side}`] = [];
-                for (let i=0; i<10; i++) state[`orbitParticles${side}`].push({ angle: Math.random()*Math.PI*2, dist: 75+Math.random()*20, speed: (Math.random()*0.03+0.01)*(Math.random()>0.5?1:-1), char: ['✦','✧','✨'][Math.floor(Math.random()*3)] });
-            }
-            ctx.font = '16px Arial';
-            state[`orbitParticles${side}`].forEach(op => {
-                op.angle += op.speed * (1 + iLocal * 3);
-                const ox = cx + Math.cos(op.angle) * (op.dist + iLocal * 30);
-                const oy = centerY + Math.sin(op.angle) * (op.dist + iLocal * 30);
-                ctx.fillStyle = themeObj.particles.colors + (0.5+iLocal*0.5) + ')';
-                ctx.save(); ctx.translate(ox,oy); ctx.scale(0.5+iLocal*0.5, 0.5+iLocal*0.5); ctx.fillText(op.char, 0, 0); ctx.restore();
-            });
+        renderRing(heartRingInner, time * 0.3, Math.PI * 1.7, 1.4, '#ffffff', 0.6);
+        renderRing(heartRingMiddle, -time * 0.1, Math.PI * 2, 2.0 + maxI * 1.2, heartThemeColor, 0.8);
+        renderRing(heartRingMiddle + 4, time * 0.2, Math.PI * 2, 1.4, '#ff88dd', 0.45);
+        renderRing(heartRingOuter, -time * 0.15, Math.PI * 2, 1.4, heartThemeColor, 0.35, [12, 8]);
+        // Extra subtle tick ring
+        renderRing(heartRingOuter + 6, time * 0.05, Math.PI * 2, 2.5, '#88aaff', 0.25, [2, 18]);
 
+        // Heart Layers (Multi-layer glow without extreme brightness)
+        ctx.save();
+        ctx.translate(0, -13); // Shift heart graphic up 13px to visually center it
+
+        const hp = new Path2D();
+        const hs = heartBaseSize * 2.0; // 2x scale as requested
+        hp.moveTo(0,        -hs * 0.15);
+        hp.bezierCurveTo( hs*0.1,  -hs*0.65,  hs*0.9, -hs*0.65,  hs*0.9, -hs*0.0);
+        hp.bezierCurveTo( hs*0.9,   hs*0.45,  hs*0.5,  hs*0.75,       0,  hs*1.1);
+        hp.bezierCurveTo(-hs*0.5,   hs*0.75, -hs*0.9,  hs*0.45, -hs*0.9, -hs*0.0);
+        hp.bezierCurveTo(-hs*0.9,  -hs*0.65, -hs*0.1, -hs*0.65,       0, -hs*0.15);
+
+        const drawHeartLayer = (blur, color, width, alpha) => {
+            ctx.shadowBlur = (blur * 0.5) * globalGlowMod;
+            ctx.shadowColor = color;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.globalAlpha = alpha;
+            ctx.stroke(hp);
+        };
+        
+        // Use original base size for stroke so the lines stay sharp despite 2x size
+        const hw = heartBaseSize;
+        drawHeartLayer(45, '#ff44aa', hw * 0.5, 0.1);
+        drawHeartLayer(26, '#ff66bb', hw * 0.25, 0.2);
+        drawHeartLayer(14, '#ff88cc', hw * 0.1, 0.4); 
+        drawHeartLayer(6,  '#ffaadd', 2, 0.6);        
+        drawHeartLayer(2,  '#ffccff', 1.5, 0.75);
+        drawHeartLayer(0,  '#ffffff', 1, 0.4); 
+        
+        ctx.restore(); // Restore the local -5px translation for the heart graphic
+        ctx.restore(); // Restore the global centerX, centerY translation for the entire Heart HUD
+
+        // --- 4. AVATAR HUD ---
+        const drawAvatar = (cx, iLocal, themeObj, tName, rotateSign) => {
             ctx.save();
-            const avatarScale = 1 + (iLocal * 0.15);
             ctx.translate(cx, centerY);
-            ctx.scale(avatarScale, avatarScale);
             
+            const avaHalo = ctx.createRadialGradient(0, 0, avatarRadius * 0.8, 0, 0, avatarRadius * 2.2);
+            avaHalo.addColorStop(0, `${themeObj.glowColor}22`);
+            avaHalo.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = avaHalo;
+            ctx.beginPath(); ctx.arc(0, 0, avatarRadius * 2.2, 0, Math.PI*2); ctx.fill();
+
+            ctx.beginPath(); ctx.arc(0, 0, avatarRadius + 40, 0, Math.PI * 2);
+            ctx.fillStyle = `${themeObj.glowColor}05`; ctx.shadowBlur = 10; ctx.fill();
+
+            ctx.scale(1 + iLocal * 0.06 + breathing * 0.015, 1 + iLocal * 0.06 + breathing * 0.015);
+
             if (!state.avatarCache) state.avatarCache = {};
             if (!state.avatarCache[tName]) {
                 const img = new Image();
                 img.src = `avatar/avatar_${tName}.png`;
                 state.avatarCache[tName] = img;
             }
-            const avatarImg = state.avatarCache[tName];
-            
+            const aImg = state.avatarCache[tName];
+
             ctx.save();
-            ctx.beginPath(); ctx.arc(0, 0, avatarRadius, 0, Math.PI * 2); ctx.clip();
-            if (iLocal > 0.3) { ctx.globalCompositeOperation = 'lighter'; ctx.shadowBlur = 20 * iLocal; ctx.shadowColor = themeObj.glowColor; }
-            if (avatarImg.complete && avatarImg.naturalWidth > 0) ctx.drawImage(avatarImg, -avatarRadius, -avatarRadius, avatarRadius*2, avatarRadius*2);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.beginPath(); ctx.arc(0, 0, avatarRadius, 0, Math.PI * 2); 
+            ctx.clip();
+            if (aImg.complete && aImg.naturalWidth > 0) {
+                ctx.drawImage(aImg, -avatarRadius, -avatarRadius, avatarRadius*2, avatarRadius*2);
+            }
+            const innerShadow = ctx.createRadialGradient(0, 0, avatarRadius * 0.7, 0, 0, avatarRadius);
+            innerShadow.addColorStop(0, 'rgba(0,0,0,0)');
+            innerShadow.addColorStop(1, `${themeObj.glowColor}88`);
+            ctx.fillStyle = innerShadow;
+            ctx.fillRect(-avatarRadius, -avatarRadius, avatarRadius*2, avatarRadius*2);
             ctx.restore();
+
+            ctx.beginPath(); ctx.arc(0, 0, avatarRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 1; ctx.shadowBlur = 5; ctx.shadowColor = '#ffffff'; ctx.stroke();
+
+            // Refined Multi-pass Avatar Rings
+            renderRing(avatarRadius + 4, 0, Math.PI * 2, 2.0 + iLocal * 2.5, themeObj.glowColor, 0.85);
+            renderRing(avatarRadius + 16, time * 0.15 * rotateSign, Math.PI * 2, 1.5, themeObj.glowColor, 0.7, [Math.PI * (avatarRadius + 16) * 0.3, 15]);
+            renderRing(avatarRadius + 26, -time * 0.08 * rotateSign, Math.PI * 2, 1.3, themeObj.glowColor, 0.4);
             
-            ctx.beginPath(); ctx.arc(0, 0, avatarRadius, 0, Math.PI*2); ctx.strokeStyle = themeObj.coreColor; ctx.lineWidth = 2; ctx.stroke();
+            // Extra translucent HUD details
+            renderRing(avatarRadius + 32, time * 0.1 * rotateSign, Math.PI * 2, 1.0, '#ffffff', 0.2, [4, 12]);
+            renderRing(avatarRadius + 38, 0, Math.PI * 2, 1.0, themeObj.glowColor, 0.15);
+
+            ctx.save();
+            ctx.rotate(-time * 0.08 * rotateSign);
+            ctx.beginPath(); ctx.arc(avatarRadius + 26, 0, 1.5, 0, Math.PI*2);
+            ctx.fillStyle = '#ffccff';
+            ctx.shadowBlur = 8 * 0.6; ctx.shadowColor = '#ffccff';
+            ctx.globalAlpha = 0.8; ctx.fill();
             ctx.restore();
-            
-            themeObj.drawRing(ctx, cx, centerY, avatarRadius, time, iLocal);
+
+            ctx.restore();
         };
 
-        // Moved drawSideAvatar calls to the end to ensure they draw ON TOP of the center line!
-        // --- 5. SÓNG ÂM XUYÊN THẤU (Continuous Dual Waveform) ---
-        const barWidth = 3;
-        const spacing = 4;
-        const maxBars = Math.floor(width / (barWidth + spacing)) - 10;
-        const totalWaveWidth = maxBars * (barWidth + spacing);
-        const startX = (width - totalWaveWidth) / 2;
-        
-        ctx.lineCap = 'round';
-        ctx.lineWidth = barWidth + (maxI * 2);
-        
-        // Gradient line trục X
-        const lineGrad = ctx.createLinearGradient(0, 0, width, 0);
-        lineGrad.addColorStop(0, theme1.glowColor);
-        lineGrad.addColorStop(1, theme2.glowColor);
-        
-        ctx.shadowBlur = 10 + maxI * 20;
-        ctx.shadowColor = maxI > 0.2 ? (iLeft > iRight ? theme1.glowColor : theme2.glowColor) : theme1.glowColor;
-        ctx.strokeStyle = lineGrad;
-        
-        ctx.beginPath();
-        ctx.moveTo(startX, centerY);
-        ctx.lineTo(startX + totalWaveWidth, centerY);
-        ctx.stroke();
+        drawAvatar(centerLeft,  iLeft,  theme1, state.selectedVoice2 || 'elaina', 1);
+        drawAvatar(centerRight, iRight, theme2, state.selectedVoice  || 'miku', -1);
 
-        ctx.shadowBlur = 15 + maxI * 40;
-        ctx.globalAlpha = Math.min(1, 0.7 + maxI * 0.8);
-        
-        state.smoothDuetBars = state.smoothDuetBars || new Array(maxBars).fill(0);
-        
-        for (let i = 0; i < maxBars; i++) {
-            let targetVal = 0;
-            // Xác định xem vạch này thuộc nửa trái hay phải
-            const ratio = i / maxBars; 
-            const side = ratio < 0.5 ? 1 : 2;
-            const iLocal = side === 1 ? iLeft : iRight;
-            const tColor = side === 1 ? theme1.coreColor : theme2.coreColor;
-            
-            // Bỏ qua vùng bên trong Avatar (WaveOffset)
-            const xPos = startX + i * (barWidth + spacing);
-            const distToLeft = Math.abs(xPos - centerLeft);
-            const distToRight = Math.abs(xPos - centerRight);
-            if (distToLeft < 75 || distToRight < 75) continue; // Khoảng trống cho Avatar
-            
-            if (isSimulating) {
-                targetVal = Math.max(2, Math.abs(Math.sin(i*0.1 + time*5)*15) + 4);
-            } else {
-                // Map i vào dataArray đối xứng qua tâm (tâm là bass, 2 bên là treble)
-                const symRatio = ratio < 0.5 ? (1 - (ratio * 2)) : ((ratio - 0.5) * 2);
-                const dataIndex = Math.floor(symRatio * (bufferLength / 3));
-                const rVal = (dataArray ? dataArray[dataIndex] : 0) / 255;
-                const dropoff = Math.sin(ratio * Math.PI); // Ở 2 mép thấp, ở giữa cao
-                targetVal = Math.max(2, Math.pow(rVal, 1.3) * 70 * Math.pow(dropoff, 0.5) * (1 + iLocal) + 4);
-            }
-            
-            state.smoothDuetBars[i] = state.smoothDuetBars[i] * 0.2 + targetVal * 0.8;
-            const barHeight = Math.min(120, state.smoothDuetBars[i]);
-            
-            // Vẽ gradient cho từng cọc sóng gần vùng trung tâm
-            if (ratio > 0.4 && ratio < 0.6) {
-                ctx.strokeStyle = lineGrad;
-            } else {
-                ctx.strokeStyle = tColor;
-            }
-            
-            ctx.beginPath();
-            ctx.moveTo(xPos, centerY - barHeight);
-            ctx.lineTo(xPos, centerY + barHeight);
-            ctx.stroke();
-        }
-        
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1.0;
-        
-        // Vẽ Avatar LÊN TRÊN CÙNG để che đi đường line xuyên tâm
-        drawSideAvatar(1, centerLeft, iLeft, theme1, state.selectedVoice2);
-        drawSideAvatar(2, centerRight, iRight, theme2, state.selectedVoice);
-        
-        ctx.restore(); // Restore camera shake
+        ctx.restore(); 
     }
 
     let lastDrawTime = Date.now();
