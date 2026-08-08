@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const intensity = Math.max(0, 1 - (star.z / maxZ));
             // Color ranges from purple to cyan depending on position
-            const color = star.x > 0 ? \`rgba(6, 182, 212, \${intensity})\` : \`rgba(168, 85, 247, \${intensity})\`;
+            const color = star.x > 0 ? `rgba(6, 182, 212, ${intensity})` : `rgba(168, 85, 247, ${intensity})`;
             
             ctx.strokeStyle = color;
             ctx.lineWidth = intensity * 3;
