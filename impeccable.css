@@ -1,0 +1,347 @@
+/* IMPECCABLE CSS OVERRIDES */
+/* Target Audience: Anime Fans, VTuber Enthusiasts */
+/* Aesthetic: Gothic Anime / Immersive / High-End */
+
+:root {
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Typography Enhancements */
+.hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem !important;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #FFD9E1, #FF3D5E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(255, 61, 94, 0.3));
+}
+
+.hero-desc {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+/* Character Selection Cards (Voice Cards) */
+.voice-card {
+    transition: all 0.5s var(--ease-out-expo) !important;
+    border: 1px solid rgba(255, 61, 94, 0.1) !important;
+    background: rgba(18, 2, 3, 0.4) !important;
+    backdrop-filter: blur(10px);
+}
+
+.voice-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    border-color: rgba(255, 61, 94, 0.5) !important;
+    box-shadow: 0 10px 30px -10px rgba(255, 61, 94, 0.4), inset 0 0 20px rgba(255, 61, 94, 0.1) !important;
+}
+
+.voice-card.selected {
+    border-color: #FF3D5E !important;
+    box-shadow: 0 0 30px rgba(255, 61, 94, 0.4), inset 0 0 20px rgba(255, 61, 94, 0.2) !important;
+    transform: translateY(-5px) scale(1.05) !important;
+}
+
+/* Input Fields (The URL input & Upload zone) */
+.url-field {
+    font-family: 'Outfit', sans-serif;
+    border: 1px solid rgba(255, 61, 94, 0.2) !important;
+    transition: all 0.4s var(--ease-out-expo) !important;
+    background: rgba(5, 0, 0, 0.6) !important;
+}
+
+.url-field:focus {
+    border-color: #FF3D5E !important;
+    box-shadow: 0 0 20px rgba(255, 61, 94, 0.2) !important;
+    transform: scale(1.01);
+}
+
+/* Main Generate Button */
+.btn-primary {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: all 0.4s var(--ease-out-expo) !important;
+    background: linear-gradient(135deg, #B80A1E, #FF3D5E) !important;
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+    transform: skewX(-20deg);
+    transition: all 0.6s var(--ease-out-expo);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 25px rgba(255, 61, 94, 0.5) !important;
+}
+
+.btn-primary:hover::before {
+    left: 150%;
+}
+
+/* Player Bar Glassmorphism */
+.player-bar {
+    background: rgba(12, 2, 3, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(150%) !important;
+    border-top: 1px solid rgba(255, 61, 94, 0.15) !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Processing Visualizer Circle */
+.visualizer-circle {
+    box-shadow: 0 0 50px rgba(255, 61, 94, 0.2) !important;
+    border: 2px solid rgba(255, 61, 94, 0.3) !important;
+    transition: box-shadow 0.5s ease;
+}
+
+/* Player Controls Micro-animations */
+.btn-play-round {
+    transition: all 0.4s var(--ease-spring) !important;
+}
+
+.btn-play-round:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 0 20px #ff3d5e, 0 0 40px rgba(255,61,94,.5) !important;
+}
+
+.btn-player-action {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* =========================================================
+   DYNAMIC THEME: PROCESSING PANEL OVERRIDES (Miku/Kurumi/Elaina/Mirai)
+   ========================================================= */
+
+/* Remove harsh old border */
+#processingPanel .card-border {
+    display: none !important;
+}
+
+/* Glassmorphism for Processing Card */
+#processingPanel {
+    background: rgba(10, 15, 30, 0.65) !important;
+    backdrop-filter: blur(20px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+    border: 1px solid var(--clr-border) !important;
+    box-shadow: 0 0 40px var(--clr-border-glow), inset 0 0 20px rgba(0,0,0,0.5) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    transition: all 0.5s var(--ease-out-expo);
+}
+
+/* Title Glow Effect */
+#processingMainTitle {
+    font-family: 'Outfit', sans-serif !important;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #fff, var(--clr-red-bright));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px var(--clr-border-glow));
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+#processingSubTitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Progress Bar Overrides */
+.progress-track.enhanced {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 50px !important;
+    height: 12px !important;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8) !important;
+}
+
+.progress-fill-bar.enhanced {
+    background: linear-gradient(90deg, var(--clr-red-dark), var(--clr-red-bright)) !important;
+    box-shadow: 0 0 20px var(--clr-red), 0 0 40px var(--clr-border-glow) !important;
+    border-radius: 50px !important;
+    height: 100% !important;
+    position: relative;
+}
+
+/* Make music note head inherit the glow */
+.progress-fill-bar.enhanced .progress-head {
+    color: #fff !important;
+    text-shadow: 0 0 10px #fff, 0 0 20px var(--clr-red-bright) !important;
+    right: 5px !important;
+    top: -8px !important;
+}
+
+/* Stepper Active Colors */
+.timeline-step.active .step-icon {
+    background: var(--clr-red) !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px var(--clr-red-bright), 0 0 30px var(--clr-border-glow) !important;
+    border: 2px solid #fff !important;
+}
+
+.timeline-step.active .step-text h4 {
+    color: var(--clr-red-bright) !important;
+    text-shadow: 0 0 10px var(--clr-border-glow) !important;
+    font-weight: bold;
+}
+
+.timeline-step:not(.active) .step-icon {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+}
+
+.timeline-line-fill {
+    background: var(--clr-red) !important;
+    box-shadow: 0 0 10px var(--clr-red) !important;
+}
+
+/* Cancel Button Premium Ghost Style */
+#btnCancelJob {
+    background: transparent !important;
+    border: 1px solid var(--clr-border) !important;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5) !important;
+    color: #fff !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 10px 25px !important;
+    border-radius: 30px !important;
+    transition: all 0.4s var(--ease-out-expo) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+#btnCancelJob::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+#btnCancelJob:hover {
+    background: var(--clr-border-glow) !important;
+    border-color: var(--clr-red-bright) !important;
+    box-shadow: 0 0 25px var(--clr-red) !important;
+    transform: translateY(-2px) !important;
+}
+
+#btnCancelJob:hover::before {
+    left: 100%;
+}
+
+/* --- FULL SCREEN LED BORDER --- */
+#screen-led-container {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    padding: 3px;
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    overflow: hidden;
+    border-radius: 6px; /* Smooth corners for the screen edge if needed */
+}
+
+.screen-led-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200vmax;
+    height: 200vmax;
+    background: conic-gradient(
+        from 0deg, 
+        transparent 65%, 
+        var(--clr-border) 90%, 
+        var(--clr-highlight) 98%, 
+        #ffffff 100%
+    );
+    animation: spin-screen-led 6s linear infinite;
+    transform-origin: center center;
+}
+
+@keyframes spin-screen-led {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+
+/* --- INTRO SPLASH SCREEN --- */
+#introSplash {
+    position: fixed;
+    inset: 0;
+    background: #05020a;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s ease-out;
+    cursor: pointer;
+}
+#introCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+#introText {
+    position: relative;
+    z-index: 10;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-heading-alt);
+    letter-spacing: 5px;
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+    transition: opacity 0.5s;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* MAIN UI TRANSITION */
+body.intro-running .header,
+body.intro-running main,
+body.intro-running #screen-led-container {
+    opacity: 0;
+    transform: scale(2.5) translateZ(0); /* Huge scale to feel like flying INTO it */
+    pointer-events: none;
+    filter: blur(20px) brightness(200%);
+}
+body.intro-finished .header,
+body.intro-finished main {
+    transition: opacity 1.5s ease-out, transform 2.5s cubic-bezier(0.1, 0.9, 0.2, 1), filter 2s ease-out;
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: blur(0) brightness(100%);
+    pointer-events: auto;
+}
+body.intro-finished #screen-led-container {
+    transition: opacity 1.5s ease-out, transform 2.5s cubic-bezier(0.1, 0.9, 0.2, 1), filter 2s ease-out;
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: blur(0) brightness(100%);
+    pointer-events: none;
+}
+

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="100%" preserveAspectRatio="none">
+    <defs>
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    <!-- Top Right -->
+    <svg x="100%" overflow="visible">
+        <g transform="translate(-15, 0)" filter="url(#glow)">
+            <circle cx="0" cy="0" r="25" fill="none" stroke="rgba(255,40,50,0.15)" stroke-width="1"/>
+            <circle cx="0" cy="0" r="18" fill="none" stroke="rgba(255,40,50,0.3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <circle cx="0" cy="0" r="12" fill="none" stroke="rgba(255,40,50,0.2)" stroke-width="1"/>
+            <path d="M0,0 L-12,12" stroke="rgba(255,40,50,0.4)" stroke-width="1"/>
+            <circle cx="-12" cy="12" r="2" fill="rgba(255,40,50,0.6)" />
+            <path d="M0,22 L-3,22 M-6,21 L-8,24 M-14,16 L-16,19 M-20,8 L-22,10 M-22,0 L-24,0" stroke="rgba(255,40,50,0.5)" stroke-width="1"/>
+        </g>
+    </svg>
+    <!-- Bottom Right -->
+    <svg x="100%" y="100%" overflow="visible">
+        <g transform="translate(-15, 0)" filter="url(#glow)">
+            <circle cx="0" cy="0" r="25" fill="none" stroke="rgba(255,40,50,0.15)" stroke-width="1"/>
+            <circle cx="0" cy="0" r="18" fill="none" stroke="rgba(255,40,50,0.3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <circle cx="0" cy="0" r="12" fill="none" stroke="rgba(255,40,50,0.2)" stroke-width="1"/>
+            <path d="M0,0 L-12,-12" stroke="rgba(255,40,50,0.4)" stroke-width="1"/>
+            <circle cx="-12" cy="-12" r="2" fill="rgba(255,40,50,0.6)" />
+            <path d="M0,-22 L-3,-22 M-6,-21 L-8,-24 M-14,-16 L-16,-19 M-20,-8 L-22,-10 M-22,0 L-24,0" stroke="rgba(255,40,50,0.5)" stroke-width="1"/>
+        </g>
+    </svg>
+</svg>

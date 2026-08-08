@@ -98,16 +98,20 @@
             position: relative;
             z-index: 100;
             padding: 1.5rem 3rem;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            justify-content: space-between;
         }
+        .header .logo { justify-self: start; }
+        .header .header-controls { justify-self: end; }
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
             text-decoration: none;
             color: inherit;
+            align-self: flex-start;
+            margin-top: 5px;
         }
         .logo-icon {
             width: 32px; height: 32px;
@@ -210,13 +214,7 @@
         }
 
         .hero-text-wrapper {
-            text-align: left; /* Changed to left align */
-            margin-bottom: 2rem;
-            padding-top: 1rem;
-            max-width: 600px;
-            align-self: flex-start; /* Align left in flex container */
-            margin-right: auto;
-            position: relative;
+            text-align: center;
             z-index: 10;
         }
         body.is-playing .hero-text-wrapper {
@@ -377,13 +375,14 @@
 
         /* TEXT UTILS */
         .hero-eyebrow {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             letter-spacing: 0.35em;
             text-transform: uppercase;
             color: var(--clr-text-muted);
-            margin-bottom: 1.5rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
             font-family: var(--font-heading-alt);
         }
@@ -391,10 +390,10 @@
         
         .hero-title {
             font-family: var(--font-heading);
-            font-size: clamp(3.5rem, 5vw, 4.5rem);
+            font-size: clamp(2rem, 3.5vw, 3rem);
             font-weight: 700;
             line-height: 1.1;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 0 0 20px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.9);
@@ -480,6 +479,11 @@
         }
 
         .chibi-miku {
+            top: -82px;
+            right: -25px;
+            height: 116px;
+        }
+        .chibi-mirai {
             top: -82px;
             right: -25px;
             height: 116px;
@@ -1125,9 +1129,14 @@
         }
     
     </style>
+    <link rel="stylesheet" href="impeccable.css">
 </head>
 
 <body>
+    <!-- FULL SCREEN LED BORDER -->
+    <div id="screen-led-container">
+        <div class="screen-led-spinner"></div>
+    </div>
     <!-- VISUALIZER CANVAS (Full Screen Background) -->
     <canvas id="resultCanvas" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
     <canvas id="particles-canvas"></canvas>
@@ -1148,11 +1157,21 @@
             </svg>
             <div>
                 <div class="logo-name">Anime Music</div>
-                <div class="logo-subtitle" id="logoSubtitle">時崎狂三 AI Cover</div>
+                <div class="logo-subtitle" id="logoSubtitle">AI Cover</div>
             </div>
         </a>
+
+        <!-- TEXT SECTION (Centered in Header) -->
+        <div class="hero-text-wrapper" id="heroText">
+            <div class="hero-eyebrow">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="6" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/></svg>
+                AI VOICE CONVERTER
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>
+            </div>
+            <h1 class="hero-title">Select A Character<br><span class="highlight" style="color: #FF3D5E;">To Start Singing</span></h1>
+        </div>
+
         <div class="header-controls">
-            <!-- Server button removed as requested by user -->
         </div>
     </header>
 
@@ -1160,19 +1179,6 @@
     <main>
         <!-- PLAYER LAYOUT -->
         <div class="player-container">
-            <!-- TEXT SECTION (Top) -->
-            <div class="hero-text-wrapper" id="heroText" style="position: absolute; top: 3%; left: 0px; text-align: left; z-index: 10;">
-                <div class="hero-eyebrow" style="font-size: 1.0rem; color: var(--clr-text-muted); margin-bottom: 8px;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: middle;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="6" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/></svg>
-                    TOKISAKI KURUMI
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="margin-left: 5px; vertical-align: middle;"><path d="M12 18.5l-3-2-2-4 1-3 3 1 1-1v4l2 1zM20 9l-4-1-2 3v3l2 4 4 1-1-3 2-2-3-3zM4 9l4-1 2 3v3l-2 4-4 1 1-3-2-2 3-3z"/></svg>
-                </div>
-                <h1 class="hero-title" style="font-size: 2.5rem; font-family: 'Cinzel', serif; font-weight: 700; margin: 0; line-height: 1.2;">Turn Any Song<br>Into <span class="highlight" style="color: #FF3D5E;">Her Voice</span></h1>
-                <p class="hero-desc" style="font-size: 1rem; font-style: italic; color: var(--clr-text-muted); margin-top: 8px;">The Time Has Begun...</p>
-            </div>
-
-
-
             <!-- INTERACTION PANELS (Bottom Center) -->
             <div class="interaction-area">
                 
@@ -1198,7 +1204,7 @@
                             </label>
                         </div>
                         <div class="voice-selector" id="voiceSelector">
-                            <div class="voice-option active" data-voice="kurumi">
+                            <div class="voice-option" data-voice="kurumi">
                                 <img src="avatar/avatar_kurumi.png" alt="Kurumi"><span>Kurumi</span>
                             </div>
                             <div class="voice-option" data-voice="elaina">
@@ -1206,6 +1212,9 @@
                             </div>
                             <div class="voice-option" data-voice="miku">
                                 <img src="avatar/avatar_miku.png" alt="Miku"><span>Miku</span>
+                            </div>
+                            <div class="voice-option" data-voice="mirai">
+                                <img src="avatar/avatar_mirai.png" alt="Mirai"><span>Mirai</span>
                             </div>
                         </div>
 
@@ -1241,7 +1250,7 @@
                         <div class="floating-bg" id="floatingBg"></div>
                         
                         <div class="processing-hero">
-                            <canvas id="processingCanvas" width="800" height="200" style="width: 100%; height: 150px; display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></canvas>
+                            <canvas id="processingCanvas" width="800" height="250" style="width: 100%; height: 180px; display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></canvas>
                         </div>
 
                         <h2 class="processing-main-title" id="processingMainTitle">🎙 AI ĐANG TỔNG HỢP GIỌNG NÓI</h2>
@@ -1498,8 +1507,8 @@
     <!-- TOAST CONTAINER -->
     <div id="toastContainer"></div>
 
-    <!-- SETTINGS MODAL REMOVED -->
-
-    <script src="app.js?v=2"></script>
+    <!-- Ứng dụng chính -->
+    <script src="intro.js"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>
