@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
         #introSplash {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000 url('assets/blackhole.jpg') center/cover no-repeat;
+            background: radial-gradient(circle at center, #0a0a20 0%, #000000 60%);
             z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
             transition: opacity 1.5s ease;
         }
@@ -15,159 +18,278 @@ document.addEventListener('DOMContentLoaded', () => {
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
-        
-        /* The Outer Border */
-        .sci-fi-border {
-            position: absolute;
-            top: 20px; left: 20px; right: 20px; bottom: 20px;
-            border: 2px solid rgba(168, 85, 247, 0.4);
-            border-radius: 15px;
-            z-index: 3;
-            pointer-events: none;
-            box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.2);
-        }
-        .sci-fi-border::before, .sci-fi-border::after {
-            content: '';
-            position: absolute;
-            width: 40px; height: 40px;
-            border: 2px solid #a855f7;
-        }
-        .sci-fi-border::before {
-            top: -2px; left: -2px;
-            border-right: none; border-bottom: none;
-            border-top-left-radius: 15px;
-        }
-        .sci-fi-border::after {
-            bottom: -2px; right: -2px;
-            border-left: none; border-top: none;
-            border-bottom-right-radius: 15px;
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+        :root {
+            --white: #F5F3FF;
+            --gray: #A9A4BD;
+            --purple: #9B6CFF;
+            --violet: #6C4DFF;
+            --cyan: #54D9FF;
+            --pink: #FF5FD7;
         }
 
-        /* Container for UI */
-        .ui-layer {
+        .troll-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 4;
+            z-index: 10;
+            pointer-events: none;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .troll-container * {
+            pointer-events: auto;
+        }
+
+        .hud-frame {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-            padding: 8vh 20px;
-            box-sizing: border-box;
-            pointer-events: none;
-        }
-        
-        .troll-title-area {
-            text-align: center;
-            pointer-events: auto;
-            text-transform: uppercase;
-        }
-        
-        .troll-subtitle {
-            font-family: 'Inter', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 6px;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .troll-subtitle::before, .troll-subtitle::after {
-            content: ' ✦ ';
-            opacity: 0.5;
+            justify-content: flex-start;
+            padding-top: 4vh;
+            border: 1px solid rgba(169, 164, 189, 0.15);
+            clip-path: polygon(
+                40px 0, calc(100% - 40px) 0, 
+                100% 40px, 100% calc(100% - 40px), 
+                calc(100% - 40px) 100%, 40px 100%, 
+                0 calc(100% - 40px), 0 40px
+            );
+            background: transparent;
         }
 
-        .troll-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: white;
-            letter-spacing: 2px;
+        .hud-corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--purple);
+            opacity: 0.4;
+        }
+        .hud-corner.top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .hud-corner.top-right { top: 0; right: 0; border-left: none; border-bottom: none; }
+        .hud-corner.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+        .hud-corner.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        .mockup-pretitle {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.6em;
+            color: var(--gray);
+            text-transform: uppercase;
             margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(255,255,255,0.2);
         }
-        
-        .highlight-50k {
-            color: #a855f7;
-            text-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7;
-            font-size: 4.5rem;
-            vertical-align: middle;
+
+        .mockup-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-transform: uppercase;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 40px;
         }
-        
-        .card-icon {
-            font-size: 3rem;
-            color: #a855f7;
-            text-shadow: 0 0 15px #a855f7;
+        .gradient-text {
+            background: linear-gradient(90deg, var(--purple), var(--pink), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.35em;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(155, 108, 255, 0.15);
+            padding: 0 5px;
+        }
+
+        .hud-logo-container {
+            margin-bottom: 40px;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(155, 108, 255, 0.4));
+        }
+        .hud-logo-svg {
+            width: 55px;
+            height: 55px;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
         }
 
         .troll-buttons-area {
             display: flex;
-            gap: 40px;
             align-items: center;
-            pointer-events: auto;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+            perspective: 1000px;
         }
 
-        .btn-wrapper {
+        .hud-btn {
+            position: relative;
+            width: 330px;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(145deg, rgba(30, 40, 60, 0.8), rgba(10, 15, 25, 0.95));
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 4px solid;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.6),
+                inset 0 2px 10px rgba(255,255,255,0.05);
+        }
+
+        .hud-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 70%);
+            border-radius: 14px;
+            pointer-events: none;
+        }
+
+        .hud-btn::after {
+            content: '///';
+            position: absolute;
+            bottom: 6px; right: 15px;
+            font-size: 9px;
+            letter-spacing: 3px;
+            opacity: 0.4;
+            color: inherit;
+            font-weight: 700;
+            transform: translateZ(10px);
+        }
+
+        .hud-btn > * {
+            z-index: 1;
+            position: relative;
+            transform: translateZ(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            color: inherit;
+        }
+        
+        .btn-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: currentColor;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            opacity: 0.1;
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+        }
+
+        .btn-content {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 15px;
         }
-        
-        .btn-wrapper-ok {
-            filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));
-        }
-        .btn-wrapper-no {
-            filter: drop-shadow(0 0 10px rgba(248, 113, 113, 0.5));
-            position: relative; 
-            transition: left 0.1s ease, top 0.1s ease;
-        }
-        
-        .sci-btn-border {
-            padding: 2px;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            display: inline-block;
-        }
-        .sci-btn-border-ok { background: #22d3ee; }
-        .sci-btn-border-no { background: #f87171; }
-
-        .sci-btn {
-            font-family: 'Inter', sans-serif;
+        .btn-label {
             font-size: 1.4rem;
-            font-weight: 800;
-            padding: 18px 45px;
-            background: rgba(0,0,0,0.8);
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
+            font-weight: 700;
             letter-spacing: 2px;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            text-shadow: none;
         }
-
-        .sci-btn-ok { color: #22d3ee; }
-        .sci-btn-ok:hover { background: rgba(34, 211, 238, 0.2); }
-        .sci-btn-no { color: #f87171; }
-        .sci-btn-no:hover { background: rgba(248, 113, 113, 0.2); }
-
-        .btn-subtext {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
+        .btn-line {
+            width: 0px;
+            height: 1px;
+            margin: 6px 0;
+            background: currentColor;
+            transition: all 0.4s ease;
+        }
+        .btn-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
             font-weight: 500;
+            line-height: 1.3;
+            opacity: 0.8;
         }
-        .btn-subtext-ok { color: #22d3ee; }
-        .btn-subtext-no { color: #f87171; }
 
+        /* OK BUTTON - CYAN */
+        .hud-btn-ok { 
+            border-bottom-color: #1a6d8c;
+            color: var(--cyan); 
+        }
+        .hud-btn-ok .btn-label { color: #E0F7FF; }
+        .hud-btn-ok:hover { 
+            border-bottom-color: var(--cyan);
+            transform: translateY(-10px) rotateX(10deg) rotateY(-5deg);
+            box-shadow: 
+                0 25px 40px rgba(84, 217, 255, 0.2), 
+                0 10px 15px rgba(0,0,0,0.8),
+                inset 0 2px 15px rgba(84, 217, 255, 0.2);
+        }
+        .hud-btn-ok:hover > * {
+            transform: translateZ(30px);
+        }
+        .hud-btn-ok:hover .btn-icon::before { opacity: 0.3; }
+        .hud-btn-ok:hover .btn-line { width: 100%; box-shadow: 0 0 8px var(--cyan); }
+        .hud-btn-ok:hover .btn-label { text-shadow: 0 0 15px rgba(84, 217, 255, 0.6); }
+
+        /* NO BUTTON - PINK/RED */
+        .hud-btn-no { 
+            border-bottom-color: #8c1a53;
+            color: var(--pink); 
+        }
+        .hud-btn-no .btn-label { color: #FFE4F5; }
+        .hud-btn-no:hover { 
+            border-bottom-color: var(--pink);
+            transform: translateY(-10px) rotateX(10deg) rotateY(5deg);
+            box-shadow: 
+                0 25px 40px rgba(255, 95, 215, 0.2), 
+                0 10px 15px rgba(0,0,0,0.8),
+                inset 0 2px 15px rgba(255, 95, 215, 0.2);
+        }
+        .hud-btn-no:hover > * {
+            transform: translateZ(30px);
+        }
+        .hud-btn-no:hover .btn-icon::before { opacity: 0.3; }
+        .hud-btn-no:hover .btn-line { width: 100%; box-shadow: 0 0 8px var(--pink); }
+        .hud-btn-no:hover .btn-label { text-shadow: 0 0 15px rgba(255, 95, 215, 0.6); }
+
+        .btn-wrapper-no {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-wrapper-ok {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
         .troll-footer {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 4px;
+            position: absolute;
+            bottom: 30px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            letter-spacing: 5px;
             color: rgba(255,255,255,0.4);
             text-transform: uppercase;
-            margin-top: 30px;
         }
     `;
     document.head.appendChild(style);
@@ -181,46 +303,69 @@ document.addEventListener('DOMContentLoaded', () => {
     introDiv.appendChild(canvas);
 
     const trollContainer = document.createElement('div');
-    trollContainer.style.width = '100%';
-    trollContainer.style.height = '100%';
+    trollContainer.className = 'troll-container';
     trollContainer.innerHTML = `
-        <div class="sci-fi-border"></div>
-        
-        <div class="ui-layer">
-            <!-- TITLE AREA -->
-            <div class="troll-title-area">
-                <div class="troll-subtitle">BẠN CÓ SẴN LÒNG</div>
-                <div class="troll-title">ĐẦU TƯ <span class="highlight-50k">50K</span> VÀO TÔI KHÔNG?</div>
-                <div class="card-icon">💳</div>
+        <div class="hud-frame">
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="mockup-pretitle">BẠN CÓ SẴN LÒNG</div>
+            <h1 class="mockup-title">ĐẦU TƯ <span class="gradient-text">50K</span> VÀO TÔI KHÔNG?</h1>
+            
+            <div class="hud-logo-container">
+                <svg class="hud-logo-svg" viewBox="0 0 24 24" fill="none" stroke="url(#logoGradient)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#9B6CFF" />
+                            <stop offset="100%" stop-color="#54D9FF" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                    <line x1="6" y1="14" x2="10" y2="14"></line>
+                    <circle cx="16" cy="14" r="1"></circle>
+                </svg>
             </div>
 
-            <!-- BUTTONS AREA -->
-            <div style="display: flex; flex-direction: column; align-items: center; pointer-events: auto;">
-                <div class="troll-buttons-area">
-                    <!-- OK BUTTON -->
-                    <div class="btn-wrapper btn-wrapper-ok" id="btnOkWrapper">
-                        <div class="sci-btn-border sci-btn-border-ok">
-                            <button class="sci-btn sci-btn-ok" id="btnOk">
-                                <span style="font-size: 2rem;">💸</span> ĐẦU TƯ
-                            </button>
+            <div class="troll-buttons-area">
+                <div class="btn-wrapper btn-wrapper-ok" id="btnOkWrapper">
+                    <button class="hud-btn hud-btn-ok" id="btnOk">
+                        <div class="btn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                                <polygon points="12 6 17 9 17 15 12 18 7 15 7 9 12 6" />
+                                <circle cx="12" cy="12" r="2" />
+                            </svg>
                         </div>
-                        <div class="btn-subtext btn-subtext-ok">Hãy để 50K tạo nên điều đặc biệt ✨</div>
-                    </div>
-                    
-                    <!-- NO BUTTON -->
-                    <div class="btn-wrapper btn-wrapper-no" id="btnNoWrapper">
-                        <div class="sci-btn-border sci-btn-border-no">
-                            <button class="sci-btn sci-btn-no" id="btnNo">
-                                <span style="font-size: 2rem;">🏃‍♂️</span> KHÔNG ĐỜI NÀO
-                            </button>
+                        <div class="btn-content">
+                            <div class="btn-label">ĐẦU TƯ</div>
+                            <div class="btn-line"></div>
+                            <div class="btn-desc">Hãy để 50K tạo nên<br>điều đặc biệt ✨</div>
                         </div>
-                        <div class="btn-subtext btn-subtext-no">Ủa? Nghĩ lại đi mà... 🥺</div>
-                    </div>
+                    </button>
                 </div>
                 
-                <!-- FOOTER -->
-                <div class="troll-footer">LỰA CHỌN LÀ CỦA BẠN ❖ VŨ TRỤ CHỈ ĐANG CHỜ ĐỢI</div>
+                <div class="btn-wrapper btn-wrapper-no" id="btnNoWrapper">
+                    <button class="hud-btn hud-btn-no" id="btnNo">
+                        <div class="btn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6L6 18" />
+                                <path d="M6 6l12 12" />
+                                <rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="2 3" />
+                            </svg>
+                        </div>
+                        <div class="btn-content">
+                            <div class="btn-label">KHÔNG ĐỜI NÀO</div>
+                            <div class="btn-line"></div>
+                            <div class="btn-desc">Ủa? Nghĩ lại đi mà... 🥺</div>
+                        </div>
+                    </button>
+                </div>
             </div>
+
+            <div class="troll-footer">LỰA CHỌN LÀ CỦA BẠN</div>
         </div>
     `;
 
@@ -229,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('overflow-hidden');
 
     // 3. Canvas Logic
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: true });
     let width, height, cx, cy;
     const numStars = 2000;
     const stars = [];
@@ -264,59 +409,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Troll logic for NO button
     const btnNoWrapper = document.getElementById('btnNoWrapper');
-    const trollTitleRect = document.querySelector('.troll-title-area');
-    const introSplash = document.getElementById('introSplash');
+    let trollScaleNo = 1.0;
+    let trollScaleOk = 1.0;
     
-    let trollScale = 1.0;
-    let trollOpacity = 1.0;
+    let currentTx = 0;
+    let currentTy = 0;
+    let originalNoRect = null;
+
+    const btnOkWrapper = document.getElementById('btnOkWrapper');
+    btnOkWrapper.style.transition = 'transform 0.3s ease';
+    btnNoWrapper.style.transition = 'transform 0.2s ease';
+
+    const trollContainerRect = document.querySelector('.troll-container');
 
     function runAway() {
         if (state !== 'waiting') return;
         
-        trollScale *= 0.85;
-        trollOpacity -= 0.2;
+        if (!originalNoRect) {
+            originalNoRect = btnNoWrapper.getBoundingClientRect();
+        }
         
-        btnNoWrapper.style.transform = `scale(${trollScale})`;
-        btnNoWrapper.style.opacity = trollOpacity;
-        btnNoWrapper.style.position = 'absolute';
+        trollScaleNo *= 0.85; // Shrink NO
+        trollScaleOk *= 1.15; // Grow OK
         
-        const noRect = btnNoWrapper.getBoundingClientRect();
-        const splashRect = introSplash.getBoundingClientRect();
+        btnOkWrapper.style.transform = `scale(${trollScaleOk})`;
         
-        const noWidth = noRect.width * trollScale;
-        const noHeight = noRect.height * trollScale;
+        const noWidth = originalNoRect.width * trollScaleNo;
+        const noHeight = originalNoRect.height * trollScaleNo;
         
-        const maxLeft = window.innerWidth - noWidth - 40; // 40px buffer from edges
-        const maxTop = window.innerHeight - noHeight - 40;
+        const maxLeft = window.innerWidth - noWidth - 20;
+        const maxTop = window.innerHeight - noHeight - 20;
         
         let newLeft, newTop;
         let isOverlapping = true;
         let attempts = 0;
         
         while (isOverlapping && attempts < 150) {
-            newLeft = Math.max(40, Math.random() * maxLeft);
-            newTop = Math.max(40, Math.random() * maxTop);
+            newLeft = Math.max(20, Math.random() * maxLeft);
+            newTop = Math.max(20, Math.random() * maxTop);
             
-            const buffer = 40;
-            // Avoid title area
-            const titleBounds = trollTitleRect.getBoundingClientRect();
-            const overlapTitle = 
-                (newLeft + noWidth > titleBounds.left - buffer && newLeft < titleBounds.right + buffer) &&
-                (newTop + noHeight > titleBounds.top - buffer && newTop < titleBounds.bottom + buffer);
+            const buffer = 30;
+            const containerBox = trollContainerRect.getBoundingClientRect();
+            
+            const overlapContainer = 
+                (newLeft + noWidth > containerBox.left - buffer && newLeft < containerBox.right + buffer) &&
+                (newTop + noHeight > containerBox.top - buffer && newTop < containerBox.bottom + buffer);
                 
-            const overlapSelf = 
-                (newLeft + noWidth > splashRect.left - buffer && newLeft < splashRect.right + buffer) &&
-                (newTop + noHeight > splashRect.top - buffer && newTop < splashRect.bottom + buffer);
-                
-            if (!overlapTitle && !overlapSelf) {
+            if (!overlapContainer) {
                 isOverlapping = false;
             }
             attempts++;
         }
         
-        btnNoWrapper.style.left = newLeft + 'px';
-        btnNoWrapper.style.top = newTop + 'px';
-        btnNoWrapper.style.transform = `scale(${trollScale})`;
+        currentTx = newLeft - originalNoRect.left;
+        currentTy = newTop - originalNoRect.top;
+        
+        btnNoWrapper.style.transform = `translate(${currentTx}px, ${currentTy}px) scale(${trollScaleNo})`;
     }
 
     btnNoWrapper.addEventListener('mouseenter', runAway);
