@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
             z-index: 1;
         }
         .troll-container {
-            position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
@@ -119,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             
             <div class="btn-wrapper btn-wrapper-no" id="btnNoWrapper">
-                <button class="sci-btn sci-btn-no" id="btnNo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; padding: 12px 30px;">
-                    <div style="display: flex; align-items: center;">
+                <button class="sci-btn sci-btn-no" id="btnNo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; padding: 15px 30px; gap: 0;">
+                    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
                         <span style="font-size: 1.8rem; margin-right: 8px;">🏃‍♂️</span> KHÔNG ĐỜI
                     </div>
-                    <div style="margin-top: 4px;">NÀO</div>
+                    <div style="margin-top: 4px; text-align: center; width: 100%;">NÀO</div>
                 </button>
                 <div class="btn-subtext btn-subtext-no">Ủa? Nghĩ lại đi mà... 🥺</div>
             </div>
