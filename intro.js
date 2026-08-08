@@ -5,11 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
         #introSplash {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000;
+            background: #000 url('assets/blackhole.jpg') center/cover no-repeat;
             z-index: 99999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             overflow: hidden;
             transition: opacity 1.5s ease;
         }
@@ -18,64 +15,144 @@ document.addEventListener('DOMContentLoaded', () => {
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
-        .troll-container {
-            z-index: 2;
+        
+        /* The Outer Border */
+        .sci-fi-border {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            border-radius: 15px;
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+        .sci-fi-border::before, .sci-fi-border::after {
+            content: '';
+            position: absolute;
+            width: 40px; height: 40px;
+            border: 2px solid #a855f7;
+        }
+        .sci-fi-border::before {
+            top: -2px; left: -2px;
+            border-right: none; border-bottom: none;
+            border-top-left-radius: 15px;
+        }
+        .sci-fi-border::after {
+            bottom: -2px; right: -2px;
+            border-left: none; border-top: none;
+            border-bottom-right-radius: 15px;
+        }
+
+        /* Container for UI */
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 4;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 40px;
-            margin-top: -100px;
+            padding: 8vh 20px;
+            box-sizing: border-box;
+            pointer-events: none;
         }
-        .sci-btn {
+        
+        .troll-title-area {
+            text-align: center;
+            pointer-events: auto;
+            text-transform: uppercase;
+        }
+        
+        .troll-subtitle {
             font-family: 'Inter', sans-serif;
             font-size: 1.2rem;
-            font-weight: 800;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .troll-subtitle::before, .troll-subtitle::after {
+            content: ' ✦ ';
+            opacity: 0.5;
+        }
+
+        .troll-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: white;
             letter-spacing: 2px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255,255,255,0.2);
         }
-        .sci-btn-ok {
-            background: transparent;
-            color: #22d3ee;
-            border: 2px solid #22d3ee;
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+        
+        .highlight-50k {
+            color: #a855f7;
+            text-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7;
+            font-size: 4.5rem;
+            vertical-align: middle;
         }
-        .sci-btn-ok:hover {
-            background: rgba(34, 211, 238, 0.1);
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.6), inset 0 0 30px rgba(34, 211, 238, 0.4);
+        
+        .card-icon {
+            font-size: 3rem;
+            color: #a855f7;
+            text-shadow: 0 0 15px #a855f7;
         }
-        .sci-btn-no {
-            background: transparent;
-            color: #f87171;
-            border: 2px solid #f87171;
-            box-shadow: 0 0 20px rgba(248, 113, 113, 0.2);
-        }
-        .sci-btn-no:hover {
-            background: rgba(248, 113, 113, 0.1);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), inset 0 0 30px rgba(239, 68, 68, 0.4);
-        }
+
         .troll-buttons-area {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             align-items: center;
+            pointer-events: auto;
         }
+
         .btn-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
         }
+        
+        .btn-wrapper-ok {
+            filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));
+        }
         .btn-wrapper-no {
+            filter: drop-shadow(0 0 10px rgba(248, 113, 113, 0.5));
             position: relative; 
             transition: left 0.1s ease, top 0.1s ease;
         }
+        
+        .sci-btn-border {
+            padding: 2px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            display: inline-block;
+        }
+        .sci-btn-border-ok { background: #22d3ee; }
+        .sci-btn-border-no { background: #f87171; }
+
+        .sci-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            padding: 18px 45px;
+            background: rgba(0,0,0,0.8);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+
+        .sci-btn-ok { color: #22d3ee; }
+        .sci-btn-ok:hover { background: rgba(34, 211, 238, 0.2); }
+        .sci-btn-no { color: #f87171; }
+        .sci-btn-no:hover { background: rgba(248, 113, 113, 0.2); }
+
         .btn-subtext {
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
@@ -83,14 +160,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         .btn-subtext-ok { color: #22d3ee; }
         .btn-subtext-no { color: #f87171; }
+
         .troll-footer {
-            position: absolute;
-            bottom: 30px;
             font-family: 'Inter', sans-serif;
             font-size: 0.8rem;
             letter-spacing: 4px;
             color: rgba(255,255,255,0.4);
             text-transform: uppercase;
+            margin-top: 30px;
         }
     `;
     document.head.appendChild(style);
@@ -104,31 +181,47 @@ document.addEventListener('DOMContentLoaded', () => {
     introDiv.appendChild(canvas);
 
     const trollContainer = document.createElement('div');
-    trollContainer.className = 'troll-container';
+    trollContainer.style.width = '100%';
+    trollContainer.style.height = '100%';
     trollContainer.innerHTML = `
-        <div style="text-align: center; color: white;">
-            <h1 style="font-family: 'Inter', sans-serif; font-size: 3rem; margin-bottom: 15px; letter-spacing: 3px; font-weight: 900; background: linear-gradient(90deg, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KHỞI ĐỘNG VŨ TRỤ</h1>
-            <p style="font-family: 'Inter', sans-serif; font-size: 1.2rem; color: rgba(255,255,255,0.7); font-weight: 300;">Hệ thống yêu cầu nạp năng lượng (50K) để tiếp tục</p>
-        </div>
-        <div class="troll-buttons-area">
-            <div class="btn-wrapper btn-wrapper-ok" id="btnOkWrapper">
-                <button class="sci-btn sci-btn-ok" id="btnOk">
-                    <span style="font-size: 2rem;">💸</span> ĐẦU TƯ
-                </button>
-                <div class="btn-subtext btn-subtext-ok">Hãy để 50K tạo nên điều đặc biệt ✨</div>
+        <div class="sci-fi-border"></div>
+        
+        <div class="ui-layer">
+            <!-- TITLE AREA -->
+            <div class="troll-title-area">
+                <div class="troll-subtitle">BẠN CÓ SẴN LÒNG</div>
+                <div class="troll-title">ĐẦU TƯ <span class="highlight-50k">50K</span> VÀO TÔI KHÔNG?</div>
+                <div class="card-icon">💳</div>
             </div>
-            
-            <div class="btn-wrapper btn-wrapper-no" id="btnNoWrapper">
-                <button class="sci-btn sci-btn-no" id="btnNo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; padding: 15px 30px; gap: 0;">
-                    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
-                        <span style="font-size: 1.8rem; margin-right: 8px;">🏃‍♂️</span> KHÔNG ĐỜI
+
+            <!-- BUTTONS AREA -->
+            <div style="display: flex; flex-direction: column; align-items: center; pointer-events: auto;">
+                <div class="troll-buttons-area">
+                    <!-- OK BUTTON -->
+                    <div class="btn-wrapper btn-wrapper-ok" id="btnOkWrapper">
+                        <div class="sci-btn-border sci-btn-border-ok">
+                            <button class="sci-btn sci-btn-ok" id="btnOk">
+                                <span style="font-size: 2rem;">💸</span> ĐẦU TƯ
+                            </button>
+                        </div>
+                        <div class="btn-subtext btn-subtext-ok">Hãy để 50K tạo nên điều đặc biệt ✨</div>
                     </div>
-                    <div style="margin-top: 4px; text-align: center; width: 100%;">NÀO</div>
-                </button>
-                <div class="btn-subtext btn-subtext-no">Ủa? Nghĩ lại đi mà... 🥺</div>
+                    
+                    <!-- NO BUTTON -->
+                    <div class="btn-wrapper btn-wrapper-no" id="btnNoWrapper">
+                        <div class="sci-btn-border sci-btn-border-no">
+                            <button class="sci-btn sci-btn-no" id="btnNo">
+                                <span style="font-size: 2rem;">🏃‍♂️</span> KHÔNG ĐỜI NÀO
+                            </button>
+                        </div>
+                        <div class="btn-subtext btn-subtext-no">Ủa? Nghĩ lại đi mà... 🥺</div>
+                    </div>
+                </div>
+                
+                <!-- FOOTER -->
+                <div class="troll-footer">LỰA CHỌN LÀ CỦA BẠN ❖ VŨ TRỤ CHỈ ĐANG CHỜ ĐỢI</div>
             </div>
         </div>
-        <div class="troll-footer">LỰA CHỌN LÀ CỦA BẠN ❖ VŨ TRỤ CHỈ ĐANG CHỜ ĐỢI</div>
     `;
 
     introDiv.appendChild(trollContainer);
@@ -171,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Troll logic for NO button
     const btnNoWrapper = document.getElementById('btnNoWrapper');
-    const trollContainerRect = document.querySelector('.troll-container');
+    const trollTitleRect = document.querySelector('.troll-title-area');
     const introSplash = document.getElementById('introSplash');
     
     let trollScale = 1.0;
@@ -193,27 +286,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const noWidth = noRect.width * trollScale;
         const noHeight = noRect.height * trollScale;
         
-        const maxLeft = window.innerWidth - noWidth - 20;
-        const maxTop = window.innerHeight - noHeight - 20;
+        const maxLeft = window.innerWidth - noWidth - 40; // 40px buffer from edges
+        const maxTop = window.innerHeight - noHeight - 40;
         
         let newLeft, newTop;
         let isOverlapping = true;
         let attempts = 0;
         
         while (isOverlapping && attempts < 150) {
-            newLeft = Math.max(20, Math.random() * maxLeft);
-            newTop = Math.max(20, Math.random() * maxTop);
+            newLeft = Math.max(40, Math.random() * maxLeft);
+            newTop = Math.max(40, Math.random() * maxTop);
             
-            const buffer = 30;
-            const overlapContainer = 
-                (newLeft + noWidth > trollContainerRect.getBoundingClientRect().left - buffer && newLeft < trollContainerRect.getBoundingClientRect().right + buffer) &&
-                (newTop + noHeight > trollContainerRect.getBoundingClientRect().top - buffer && newTop < trollContainerRect.getBoundingClientRect().bottom + buffer);
+            const buffer = 40;
+            // Avoid title area
+            const titleBounds = trollTitleRect.getBoundingClientRect();
+            const overlapTitle = 
+                (newLeft + noWidth > titleBounds.left - buffer && newLeft < titleBounds.right + buffer) &&
+                (newTop + noHeight > titleBounds.top - buffer && newTop < titleBounds.bottom + buffer);
                 
             const overlapSelf = 
                 (newLeft + noWidth > splashRect.left - buffer && newLeft < splashRect.right + buffer) &&
                 (newTop + noHeight > splashRect.top - buffer && newTop < splashRect.bottom + buffer);
                 
-            if (!overlapContainer && !overlapSelf) {
+            if (!overlapTitle && !overlapSelf) {
                 isOverlapping = false;
             }
             attempts++;
@@ -256,8 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         warpTime += 0.016; // roughly 60fps
         
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.fillRect(0, 0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
         let easedProgress = 0;
         
