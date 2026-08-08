@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             flex-direction: column;
             align-items: center;
             gap: 40px;
+            margin-top: -100px;
         }
         .sci-btn {
             font-family: 'Inter', sans-serif;
