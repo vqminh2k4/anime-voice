@@ -291,6 +291,222 @@ document.addEventListener('DOMContentLoaded', () => {
             color: rgba(255,255,255,0.4);
             text-transform: uppercase;
         }
+
+        /* Premium landing-page refinement */
+        #introSplash {
+            background:
+                radial-gradient(circle at 50% 35%, rgba(115, 73, 255, 0.18), transparent 24rem),
+                radial-gradient(circle at 18% 82%, rgba(0, 214, 255, 0.08), transparent 20rem),
+                #05050a;
+        }
+        #introSplash::before,
+        #introSplash::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        #introSplash::before {
+            opacity: 0.28;
+            background-image: linear-gradient(rgba(126, 110, 224, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(126, 110, 224, 0.08) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+        }
+        #introSplash::after {
+            background: linear-gradient(90deg, rgba(0,0,0,0.75), transparent 22%, transparent 78%, rgba(0,0,0,0.75));
+        }
+        .hud-frame {
+            justify-content: center;
+            padding: clamp(28px, 5vh, 64px) 24px;
+            border-color: rgba(180, 168, 255, 0.14);
+            background: linear-gradient(135deg, rgba(255,255,255,0.025), transparent 36%);
+        }
+        .hud-frame::before {
+            content: '';
+            position: absolute;
+            width: min(78vw, 980px);
+            height: min(78vw, 680px);
+            border: 1px solid rgba(172, 130, 255, 0.10);
+            border-radius: 50%;
+            box-shadow: 0 0 100px rgba(106, 75, 255, 0.12), inset 0 0 90px rgba(32, 17, 73, 0.26);
+            pointer-events: none;
+        }
+        .mockup-pretitle {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 18px;
+            padding: 8px 13px;
+            border: 1px solid rgba(180, 168, 255, 0.24);
+            border-radius: 999px;
+            background: rgba(13, 12, 27, 0.72);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            color: #c9c4e5;
+            font-size: clamp(0.65rem, 1vw, 0.78rem);
+            letter-spacing: 0.32em;
+        }
+        .mockup-title {
+            position: relative;
+            z-index: 1;
+            max-width: 830px;
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(2.25rem, 5vw, 4.8rem);
+            font-weight: 800;
+            letter-spacing: -0.055em;
+            line-height: 1.03;
+            text-wrap: balance;
+        }
+        .gradient-text {
+            background: linear-gradient(110deg, #81e5ff 5%, #bc6cff 47%, #ff73d4 95%);
+            -webkit-background-clip: text;
+            font-size: inherit;
+            filter: drop-shadow(0 0 18px rgba(169, 105, 255, 0.38));
+        }
+        .hud-logo-container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            width: 126px;
+            height: 126px;
+            margin: 28px 0 22px;
+            border: 1px solid rgba(131, 213, 255, 0.55);
+            border-radius: 50%;
+            background: radial-gradient(circle at 36% 30%, #6358df 0, #222258 35%, #0c1028 68%, #05060f 100%);
+            box-shadow: 0 0 0 9px rgba(116, 87, 255, 0.06), 0 0 0 10px rgba(113, 222, 255, 0.16), 0 0 55px rgba(117, 82, 255, 0.72), inset 0 1px 12px rgba(255,255,255,0.36);
+            animation: orb-breathe 4s ease-in-out infinite;
+        }
+        .hud-logo-container::before,
+        .hud-logo-container::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
+        .hud-logo-container::before { inset: -20px; border: 1px dashed rgba(105, 232, 255, 0.55); animation: orbit 11s linear infinite; }
+        .hud-logo-container::after { inset: -38px; border: 1px solid rgba(196, 105, 255, 0.18); box-shadow: 0 0 26px rgba(211, 105, 255, 0.18); }
+        .hud-logo-svg { display: none; }
+        .orb-value { position: relative; z-index: 1; color: #fff; font: 800 2.4rem/1 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.09em; text-shadow: 0 3px 18px #0a0b28; }
+        .orb-value small { display: block; margin-top: 5px; color: #9ceaff; font-size: 0.52rem; letter-spacing: 0.22em; text-align: center; }
+        @keyframes orbit { to { transform: rotate(360deg); } }
+        @keyframes orb-breathe { 50% { transform: translateY(-4px) scale(1.035); box-shadow: 0 0 0 12px rgba(116, 87, 255, 0.035), 0 0 0 13px rgba(113, 222, 255, 0.20), 0 0 80px rgba(117, 82, 255, 0.85), inset 0 1px 12px rgba(255,255,255,0.36); } }
+        .intro-proof {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .intro-proof span {
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: rgba(239, 237, 255, 0.68);
+            background: rgba(255,255,255,0.045);
+            border: 1px solid rgba(255,255,255,0.08);
+            font: 600 0.70rem/1 Inter, ui-sans-serif, system-ui, sans-serif;
+            letter-spacing: 0.03em;
+        }
+        .troll-buttons-area {
+            position: relative;
+            z-index: 2;
+            gap: 16px;
+            margin-top: 4px;
+        }
+        .hud-btn {
+            width: min(360px, calc(50vw - 34px));
+            min-height: 132px;
+            padding: 22px 24px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-bottom-width: 1px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(36, 38, 59, 0.94), rgba(10, 11, 20, 0.94));
+        }
+        .hud-btn-ok {
+            border-color: rgba(105, 222, 255, 0.45);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .hud-btn-ok::before { background: radial-gradient(circle at 15% 0%, rgba(59, 227, 255, 0.25), transparent 45%); }
+        .hud-btn-no { border-color: rgba(211, 121, 220, 0.27); opacity: 0.78; }
+        .hud-btn:hover { opacity: 1; }
+        .hud-btn-ok:hover { transform: translateY(-6px); }
+        .hud-btn-no:hover { transform: translateY(-4px); }
+        .btn-label {
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(1rem, 1.4vw, 1.2rem);
+            letter-spacing: 0;
+        }
+        .btn-kicker { margin-bottom: 6px; color: currentColor; font: 700 0.61rem/1 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.14em; opacity: 0.9; }
+        .btn-desc { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; }
+        .troll-footer { bottom: 20px; font-size: 0.62rem; letter-spacing: 0.28em; }
+        @media (max-width: 700px) {
+            .hud-frame { justify-content: center; clip-path: none; border-left: 0; border-right: 0; }
+            .hud-corner { display: none; }
+            .mockup-title { max-width: 510px; }
+            .intro-proof { max-width: 330px; }
+            .troll-buttons-area { width: min(100%, 420px); flex-direction: column; }
+            .btn-wrapper { width: 100%; }
+            .hud-btn { width: 100%; min-height: 96px; padding: 16px 18px; }
+            .btn-icon { width: 42px; height: 42px; }
+            .troll-footer { display: none; }
+        }
+
+        /* Abstract music-studio direction — no character artwork */
+        #introSplash { background: radial-gradient(circle at 50% 41%, rgba(90, 61, 188, 0.20), transparent 24rem), radial-gradient(circle at 19% 77%, rgba(0, 203, 255, 0.08), transparent 27rem), #07070c; }
+        #introSplash::before {
+            opacity: 0.16;
+            background-image: linear-gradient(135deg, transparent 48%, rgba(255, 172, 191, 0.2) 49%, transparent 50%);
+            background-size: 34px 34px;
+            mask-image: linear-gradient(90deg, black, transparent 78%);
+        }
+        #introSplash::after { background: radial-gradient(ellipse at center, transparent 33%, rgba(0,0,0,0.56) 100%); z-index: 1; }
+        .hud-frame { align-items: center; padding: clamp(38px, 7vh, 80px) 28px; border: 0; background: transparent; clip-path: none; }
+        .hud-frame::before { width: min(92vw, 1080px); height: min(82vh, 720px); left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 26px; border-color: rgba(150, 139, 255, 0.12); box-shadow: inset 0 0 75px rgba(105, 77, 215, 0.06); }
+        .hud-corner { display: none; }
+        .mockup-pretitle, .mockup-title, .hud-logo-container, .intro-proof, .troll-buttons-area, .troll-footer { z-index: 3; }
+        .mockup-pretitle { margin-bottom: 14px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: #91ddff; font: 700 0.68rem/1 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.30em; }
+        .mockup-pretitle::before { content: '◆'; margin-right: 9px; color: #bb8cff; }
+        .mockup-title { max-width: 820px; text-align: center; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: clamp(2.65rem, 5.2vw, 5.7rem); font-weight: 800; letter-spacing: -0.075em; line-height: 0.95; text-shadow: 0 5px 30px rgba(0,0,0,0.52); }
+        .gradient-text { background: linear-gradient(100deg, #63d7ff, #ac85ff 52%, #fb67bf); -webkit-background-clip: text; filter: none; }
+        .hud-logo-container { width: 84px; height: 84px; margin: 28px 0 18px; border-color: rgba(124, 217, 255, 0.52); background: linear-gradient(145deg, rgba(58, 85, 168, 0.92), rgba(34, 20, 85, 0.92)); box-shadow: 0 0 0 7px rgba(108, 117, 255, 0.08), 0 18px 44px rgba(18, 44, 137, 0.40), inset 0 1px 10px rgba(255,255,255,0.20); animation: none; }
+        .hud-logo-container::before { inset: 7px; border: 1px solid rgba(169, 234, 255, 0.38); animation: none; }
+        .hud-logo-container::after { inset: -12px; border: 1px solid rgba(174, 123, 255, 0.23); box-shadow: none; }
+        .orb-value { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 1.65rem; }
+        .orb-value small { color: #bcefff; font-family: Inter, sans-serif; }
+        .intro-proof { justify-content: center; margin-bottom: 28px; }
+        .intro-proof span { color: #bed0e8; background: rgba(19, 29, 57, 0.58); border-color: rgba(139, 198, 255, 0.14); font-family: Inter, sans-serif; }
+        .troll-buttons-area { justify-content: center; gap: 14px; margin-top: 0; }
+        .hud-btn { width: min(330px, calc(42vw - 22px)); min-height: 116px; padding: 19px 20px; border-radius: 14px; background: linear-gradient(135deg, rgba(28, 38, 72, 0.96), rgba(12, 13, 28, 0.96)); box-shadow: 0 18px 38px rgba(0,0,0,0.34); }
+        .hud-btn::after { content: 'AI VOICE LAB'; bottom: 9px; right: 12px; color: rgba(174, 212, 255, 0.35); font-family: Inter, sans-serif; font-size: 0.48rem; letter-spacing: 0.12em; }
+        .hud-btn-ok { border-color: rgba(97, 211, 255, 0.62); }
+        .hud-btn-ok::before { background: linear-gradient(135deg, rgba(41, 191, 255, 0.22), transparent 58%); }
+        .hud-btn-no { border-color: rgba(186, 142, 255, 0.28); }
+        .hud-btn-ok:hover, .hud-btn-no:hover { transform: translateY(-5px); }
+        .btn-icon::before { background: #4fd2ff; }
+        .btn-label { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 1.04rem; letter-spacing: -0.02em; }
+        .btn-kicker { color: #82dcff; }
+        .btn-desc { color: #aebbd1; }
+        .troll-footer { left: 50%; bottom: 28px; transform: translateX(-50%); color: rgba(186, 203, 239, 0.42); }
+        .audio-stage { position: absolute; z-index: 2; inset: auto 50% 15% auto; width: min(70vw, 890px); height: 260px; transform: translateX(50%); display: flex; align-items: center; justify-content: center; gap: clamp(5px, 0.8vw, 12px); pointer-events: none; opacity: 0.66; }
+        .audio-stage::before { content: 'VOICE / SIGNAL / 50K'; position: absolute; top: -22px; color: rgba(147, 217, 255, 0.5); font: 600 0.60rem/1 Inter, sans-serif; letter-spacing: 0.32em; }
+        .audio-stage i { width: clamp(7px, 1.1vw, 13px); height: var(--h); border-radius: 999px; background: linear-gradient(180deg, rgba(110, 225, 255, 0.12), rgba(149, 102, 255, 0.8), rgba(255, 91, 193, 0.14)); box-shadow: 0 0 16px rgba(127, 128, 255, 0.25); animation: equalize 2.2s ease-in-out infinite alternate; animation-delay: var(--d); }
+        @keyframes equalize { to { transform: scaleY(0.58); opacity: 0.42; } }
+        @media (max-width: 700px) { .hud-frame { align-items: center; padding: 68px 24px 34px; } .mockup-pretitle, .mockup-title { text-align: center; } .mockup-title { max-width: 480px; font-size: clamp(2.45rem, 12vw, 4.2rem); } .audio-stage { width: 90vw; height: 185px; bottom: 18%; opacity: 0.34; } .troll-buttons-area { align-items: stretch; } .hud-btn { width: 100%; } }
+
+        /* Larger hero composition */
+        .hud-frame::before { width: min(96vw, 1260px); height: min(88vh, 820px); border-radius: 34px; }
+        .mockup-title { max-width: 970px; font-size: clamp(3.1rem, 6.2vw, 6.8rem); }
+        .hud-logo-container { width: 108px; height: 108px; margin: 34px 0 22px; }
+        .orb-value { font-size: 2.15rem; }
+        .intro-proof { margin-bottom: 34px; gap: 10px; }
+        .intro-proof span { padding: 8px 13px; font-size: 0.76rem; }
+        .troll-buttons-area { gap: 18px; }
+        .hud-btn { width: min(385px, calc(48vw - 28px)); min-height: 138px; padding: 24px 25px; }
+        .btn-icon { width: 54px; height: 54px; }
+        .btn-icon svg { width: 27px; height: 27px; }
+        .btn-label { font-size: 1.22rem; }
+        .btn-desc { font-size: 0.84rem; }
+        .audio-stage { width: min(86vw, 1160px); height: 410px; bottom: 10%; gap: clamp(7px, 1.15vw, 17px); opacity: 0.78; }
+        .audio-stage::before { top: -36px; font-size: 0.7rem; letter-spacing: 0.48em; }
+        .audio-stage i { width: clamp(10px, 1.45vw, 18px); box-shadow: 0 0 24px rgba(127, 128, 255, 0.38); }
+        .signal-watermark { position: absolute; z-index: 2; left: 50%; top: 46%; transform: translate(-50%, -50%); color: transparent; font: 900 clamp(12rem, 33vw, 32rem)/0.76 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.12em; -webkit-text-stroke: 1px rgba(155, 171, 255, 0.10); text-shadow: 0 0 80px rgba(106, 90, 255, 0.15); pointer-events: none; }
+        @media (max-width: 700px) { .mockup-title { font-size: clamp(2.6rem, 13vw, 4.55rem); } .hud-logo-container { width: 94px; height: 94px; } .hud-btn { min-height: 110px; } .audio-stage { height: 255px; bottom: 14%; } .signal-watermark { font-size: 52vw; } }
     `;
     document.head.appendChild(style);
 
@@ -311,10 +527,16 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="hud-corner bottom-left"></div>
             <div class="hud-corner bottom-right"></div>
 
-            <div class="mockup-pretitle">BẠN CÓ SẴN LÒNG</div>
-            <h1 class="mockup-title">ĐẦU TƯ <span class="gradient-text">50K</span> VÀO TÔI KHÔNG?</h1>
+            <div class="signal-watermark" aria-hidden="true">50K</div>
+            <div class="audio-stage" aria-hidden="true">
+                <i style="--h: 18%; --d: .2s"></i><i style="--h: 35%; --d: .7s"></i><i style="--h: 61%; --d: .1s"></i><i style="--h: 44%; --d: 1.1s"></i><i style="--h: 82%; --d: .4s"></i><i style="--h: 55%; --d: .9s"></i><i style="--h: 96%; --d: .3s"></i><i style="--h: 64%; --d: 1.2s"></i><i style="--h: 42%; --d: .5s"></i><i style="--h: 78%; --d: .8s"></i><i style="--h: 53%; --d: .15s"></i><i style="--h: 31%; --d: 1s"></i><i style="--h: 16%; --d: .6s"></i>
+            </div>
+
+            <div class="mockup-pretitle">MỘT LỜI MỜI NHO NHỎ</div>
+            <h1 class="mockup-title">CÙNG TÔI TẠO NÊN ĐIỀU THÚ VỊ VỚI <span class="gradient-text">50K</span>?</h1>
             
-            <div class="hud-logo-container">
+            <div class="hud-logo-container" aria-label="Gói hỗ trợ 50 nghìn đồng">
+                <div class="orb-value">50K<small>SUPPORT PASS</small></div>
                 <svg class="hud-logo-svg" viewBox="0 0 24 24" fill="none" stroke="url(#logoGradient)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                     <defs>
                         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -329,6 +551,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
             </div>
 
+            <div class="intro-proof" aria-label="Thông tin gói hỗ trợ">
+                <span>✦ 50.000đ một lần</span>
+                <span>✦ Mở khóa trải nghiệm</span>
+                <span>✦ Chỉ mất vài giây</span>
+            </div>
+
             <div class="troll-buttons-area">
                 <div class="btn-wrapper btn-wrapper-ok" id="btnOkWrapper">
                     <button class="hud-btn hud-btn-ok" id="btnOk">
@@ -340,7 +568,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                         </div>
                         <div class="btn-content">
-                            <div class="btn-label">ĐẦU TƯ</div>
+                            <div class="btn-kicker">LỰA CHỌN ĐỀ XUẤT</div>
+                            <div class="btn-label">Ừ, MÌNH ĐỒNG HÀNH</div>
                             <div class="btn-line"></div>
                             <div class="btn-desc">Hãy để 50K tạo nên<br>điều đặc biệt ✨</div>
                         </div>
@@ -357,7 +586,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                         </div>
                         <div class="btn-content">
-                            <div class="btn-label">KHÔNG ĐỜI NÀO</div>
+                            <div class="btn-kicker">MÌNH CẦN THÊM THỜI GIAN</div>
+                            <div class="btn-label">ĐỂ MÌNH SUY NGHĨ</div>
                             <div class="btn-line"></div>
                             <div class="btn-desc">Ủa? Nghĩ lại đi mà... 🥺</div>
                         </div>
@@ -365,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <div class="troll-footer">LỰA CHỌN LÀ CỦA BẠN</div>
+            <div class="troll-footer">KHÔNG ÁP LỰC • LỰA CHỌN LÀ CỦA BẠN</div>
         </div>
     `;
 
